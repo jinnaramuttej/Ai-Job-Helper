@@ -48,6 +48,7 @@ const PROFILE_KEY = "ai-job-finder:profile";
 const RESUME_KEY = "ai-job-finder:resume";
 const JOBS_KEY = "ai-job-finder:jobs";
 const APPLICATIONS_KEY = "ai-job-finder:applications";
+const SAVED_JOBS_KEY = "ai-job-finder:saved-jobs";
 const ADMIN_SESSION_KEY = "ai-job-finder:admin-session";
 
 const RESUME_PARSE_DELAY_MS = 600;
@@ -141,6 +142,26 @@ export async function getRecommendedJobs(
     .map((job) => ({ job, match: matchScore(profile, job) }))
     .sort((a, b) => b.match.score - a.match.score)
     .slice(0, limit);
+}
+
+/* Saved Jobs ------------------------------------------------------------- */
+
+export async function getSavedJobs(): Promise<Job[]> {
+  const savedIds = readCollection<string>(SAVED_JOBS_KEY, []);
+  const jobs = await getJobs();
+  return jobs.filter(job => savedIds.includes(job.id));
+}
+
+export async function saveJob(jobId: string): Promise<void> {
+  const savedIds = readCollection<string>(SAVED_JOBS_KEY, []);
+  if (!savedIds.includes(jobId)) {
+    writeJson(SAVED_JOBS_KEY, [...savedIds, jobId]);
+  }
+}
+
+export async function unsaveJob(jobId: string): Promise<void> {
+  const savedIds = readCollection<string>(SAVED_JOBS_KEY, []);
+  writeJson(SAVED_JOBS_KEY, savedIds.filter(id => id !== jobId));
 }
 
 /* Applications (admin reads; the student apply flow arrives next phase) --- */

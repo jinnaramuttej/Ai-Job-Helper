@@ -271,6 +271,22 @@ export async function getRecommendedJobs(
     .slice(0, limit);
 }
 
+/* Saved Jobs ------------------------------------------------------------- */
+
+export async function getSavedJobs(): Promise<Job[]> {
+  if (!isSupabaseConfigured()) return local.getSavedJobs();
+  // Real implementation for Supabase goes here in future phases.
+  return []; 
+}
+
+export async function saveJob(jobId: string): Promise<void> {
+  if (!isSupabaseConfigured()) return local.saveJob(jobId);
+}
+
+export async function unsaveJob(jobId: string): Promise<void> {
+  if (!isSupabaseConfigured()) return local.unsaveJob(jobId);
+}
+
 /* Applications ----------------------------------------------------------- */
 
 export async function getApplications(): Promise<Application[]> {

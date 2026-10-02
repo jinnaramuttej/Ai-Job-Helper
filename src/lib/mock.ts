@@ -68,6 +68,10 @@ export type Application = {
   jobId: string;
   studentId: string;
   appliedAt: string; // ISO date string
+  snapshot?: {
+    profile: Profile;
+    matchScore: number;
+  };
 };
 
 export type AdminUser = {

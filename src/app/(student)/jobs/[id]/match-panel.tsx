@@ -50,9 +50,28 @@ export function MatchPanel({ job }: { job: Job }) {
         </p>
       ) : (
         <>
-          <p className="mt-3 text-[15px] font-medium tabular-nums text-ink">
+          <p className="mt-3 text-2xl font-semibold tabular-nums text-ink">
             {match.score}% match
           </p>
+
+          <div className="mt-4 space-y-2 border-b border-line pb-4 text-[15px]">
+            <div className="flex justify-between">
+              <span className="text-muted">Skills</span>
+              <span className="tabular-nums">{Math.round(match.skillsPoints)} / 70</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted">Role</span>
+              <span className="tabular-nums">{Math.round(match.rolePoints)} / 15</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted">Location</span>
+              <span className="tabular-nums">{Math.round(match.locationPoints)} / 10</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted">Experience</span>
+              <span className="tabular-nums">{Math.round(match.experiencePoints)} / 5</span>
+            </div>
+          </div>
 
           <h3 className="mt-4 text-sm font-medium text-ink">Matched skills</h3>
           <p className="mt-1 text-[15px] text-ink">
@@ -67,6 +86,19 @@ export function MatchPanel({ job }: { job: Job }) {
               ? formatSkills(match.missingSkills)
               : "None — you have everything this job asks for"}
           </p>
+
+          {match.missingSkills.length > 0 && (
+            <>
+              <h3 className="mt-4 text-sm font-medium text-ink">To improve your match</h3>
+              <ul className="mt-1 list-disc space-y-1 pl-5 text-[15px] text-ink">
+                {match.missingSkills.slice(0, 3).map((skill) => (
+                  <li key={skill}>
+                    Add {displayName(skill)} to your skills if you have used it.
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
         </>
       )}
     </div>
