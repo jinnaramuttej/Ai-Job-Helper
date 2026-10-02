@@ -102,6 +102,12 @@ export type CurrentUser = {
  * Later this becomes a real auth check against the backend.
  */
 export async function getCurrentUser(): Promise<CurrentUser | null> {
+  try {
+    const res = await fetch('/api/auth/me');
+    if (res.ok) {
+      return res.json();
+    }
+  } catch {}
   const profile = await getProfile();
   return profile ? { id: "demo-user", name: profile.name, email: profile.email } : null;
 }
@@ -170,8 +176,8 @@ export async function getApplications(): Promise<Application[]> {
   return readCollection(APPLICATIONS_KEY, MOCK_APPLICATIONS);
 }
 
-export async function applyToJob(jobId: string): Promise<Application | null> {
-  const user = await getCurrentUser();
+export async function applyToJob(jobId: string, userId?: string): Promise<Application | null> {
+  const user = userId ? { id: userId } : await getCurrentUser();
   if (!user) return null;
   
   const applications = await getApplications();

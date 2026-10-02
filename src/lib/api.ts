@@ -309,8 +309,8 @@ export async function getApplications(): Promise<Application[]> {
 
 /** Creates an application for the signed-in student (unique per job). */
 export async function applyToJob(jobId: string): Promise<Application | null> {
-  if (!isSupabaseConfigured()) return local.applyToJob(jobId);
   const userId = await getSessionUserId();
+  if (!isSupabaseConfigured()) return local.applyToJob(jobId, userId || undefined);
   if (!userId) return null;
   
   // Reject duplicates

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { RecommendedJobsCard } from "@/components/recommended";
+import { AiSuggestionCard } from "@/components/ui/AiSuggestionCard";
 
 export const metadata: Metadata = {
   title: "Recommended",
@@ -12,6 +13,9 @@ export default function RecommendedPage() {
       <p className="mt-2 text-[15px] text-muted">
         Jobs ranked by how well they match your profile.
       </p>
+      
+      <AiSuggestionCard />
+      
       <RecommendedJobsCard />
     </section>
   );
