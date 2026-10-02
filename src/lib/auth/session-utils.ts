@@ -1,11 +1,12 @@
 import { SignJWT, jwtVerify } from 'jose';
 
-const secret = process.env.AUTH_SECRET;
-// The app must refuse to start without it (min 32 chars)
-if (!secret || secret.length < 32) {
-  throw new Error('AUTH_SECRET environment variable is missing or less than 32 characters');
-}
-const encodedKey = new TextEncoder().encode(secret);
+const getEncodedKey = () => {
+  const secret = process.env.AUTH_SECRET;
+  if (!secret || secret.length < 32) {
+    throw new Error('AUTH_SECRET environment variable is missing or less than 32 characters');
+  }
+  return new TextEncoder().encode(secret);
+};
 
 export type SessionPayload = {
   sub: string;
@@ -18,12 +19,12 @@ export async function createSessionToken(payload: SessionPayload) {
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
     .setExpirationTime('7d')
-    .sign(encodedKey);
+    .sign(getEncodedKey());
 }
 
 export async function verifySessionToken(token: string): Promise<SessionPayload | null> {
   try {
-    const { payload } = await jwtVerify(token, encodedKey, {
+    const { payload } = await jwtVerify(token, getEncodedKey(), {
       algorithms: ['HS256'],
     });
     return payload as SessionPayload;
