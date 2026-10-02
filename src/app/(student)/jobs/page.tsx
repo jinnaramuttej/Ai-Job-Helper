@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { RecommendedBlock } from "@/components/recommended";
-import { getCurrentUser, getApplications, getProfile, getRecommendedJobs } from "@/lib/api";
+import { getCurrentUser, getStudentApplications, getProfile, getRecommendedJobs, getResume } from "@/lib/api";
 
 export const metadata: Metadata = {
   title: "Jobs",
@@ -13,23 +13,26 @@ export default async function JobsPage() {
   let matchedJobsCount = 0;
 
   if (user) {
-    const [applications, profile, recommended] = await Promise.all([
-      getApplications(),
+    const [applications, profile, recommended, resume] = await Promise.all([
+      getStudentApplications(user.id),
       getProfile(),
       getRecommendedJobs(100), // Get a decent number for the count
+      getResume(),
     ]);
     
     applicationsSent = applications.length;
-    matchedJobsCount = recommended.length;
+    matchedJobsCount = recommended.filter(r => r.match.score >= 50).length;
     
-    // Calculate simple completeness
+    // Calculate completeness: name, branch, year, location, skills, roles, resume (7 fields total)
     let filled = 0;
-    const total = 5;
+    const total = 7;
     if (profile.name) filled++;
     if (profile.branch) filled++;
     if (profile.year) filled++;
+    if (profile.preferredLocation) filled++;
     if (profile.skills && profile.skills.length > 0) filled++;
     if (profile.preferredRoles && profile.preferredRoles.length > 0) filled++;
+    if (resume) filled++;
     
     profileCompleteness = `${Math.round((filled / total) * 100)}%`;
   }

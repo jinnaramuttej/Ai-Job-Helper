@@ -95,13 +95,13 @@ export const ROLE_OPTIONS = [
 ];
 
 export const DEFAULT_PROFILE: Profile = {
-  name: "Ananya Sharma",
-  email: "ananya.sharma@college.edu",
+  name: "Demo User",
+  email: "demo@aijobfinder.com",
   branch: "Computer science",
-  year: "3rd year",
-  preferredLocation: "Bengaluru",
-  skills: ["JavaScript", "React", "SQL"],
-  preferredRoles: ["Frontend developer"],
+  year: "",
+  preferredLocation: "Remote",
+  skills: ["React", "JavaScript"],
+  preferredRoles: [],
 };
 
 /**
@@ -383,4 +383,7 @@ export const MOCK_APPLICATIONS: Application[] = [
   { id: "app-14", jobId: "data-analyst-clearmetrics", studentId: "meera-krishnan", appliedAt: "2026-03-05T09:30:00.000Z" },
   { id: "app-15", jobId: "ui-designer-intern-craftly", studentId: "sara-iqbal", appliedAt: "2026-03-06T14:20:00.000Z" },
   { id: "app-16", jobId: "ml-intern-visionai", studentId: "arjun-nair", appliedAt: "2026-03-07T19:40:00.000Z" },
+  { id: "app-demo-1", jobId: "frontend-developer-intern-pixelworks", studentId: "demo-user", appliedAt: "2026-03-08T10:00:00.000Z" },
+  { id: "app-demo-2", jobId: "fullstack-intern-campuskart", studentId: "demo-user", appliedAt: "2026-03-09T11:00:00.000Z" },
+  { id: "app-demo-3", jobId: "ui-designer-intern-craftly", studentId: "demo-user", appliedAt: "2026-03-10T12:00:00.000Z" },
 ];

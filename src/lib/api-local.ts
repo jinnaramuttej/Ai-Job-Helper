@@ -91,6 +91,7 @@ function slugify(value: string): string {
 /* Student session -------------------------------------------------------- */
 
 export type CurrentUser = {
+  id: string;
   name: string;
   email: string;
 };
@@ -101,7 +102,7 @@ export type CurrentUser = {
  */
 export async function getCurrentUser(): Promise<CurrentUser | null> {
   const profile = await getProfile();
-  return profile ? { name: profile.name, email: profile.email } : null;
+  return profile ? { id: "demo-user", name: profile.name, email: profile.email } : null;
 }
 
 /* Profile ---------------------------------------------------------------- */

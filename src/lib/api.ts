@@ -51,7 +51,7 @@ export type {
 export type { MatchResult } from "./match";
 export { ADMIN_CREDENTIALS, ROLE_OPTIONS, YEAR_OPTIONS };
 
-export type CurrentUser = { name: string; email: string };
+export type CurrentUser = { id: string; name: string; email: string };
 export type JobMatch = { job: Job; match: MatchResult };
 export type ApplicantRow = { application: Application; student: Student };
 export type StudentApplicationRow = { application: Application; job: Job | null };
@@ -172,7 +172,7 @@ export async function studentSignUp(
     options: { data: { name, role: "student" } },
   });
   if (error || !data.user) return null;
-  return { name, email };
+  return { id: data.user.id, name, email };
 }
 
 export async function studentSignIn(
@@ -187,6 +187,7 @@ export async function studentSignIn(
   if (error || !data.user) return null;
   const profile = await getProfileRow(data.user.id);
   return {
+    id: data.user.id,
     name: profile?.name ?? "",
     email: profile?.email ?? data.user.email ?? "",
   };
@@ -203,7 +204,7 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
   if (!userId) return null;
   const profile = await getProfileRow(userId);
   if (!profile) return null;
-  return { name: profile.name, email: profile.email };
+  return { id: userId, name: profile.name, email: profile.email };
 }
 
 /* Profile ---------------------------------------------------------------- */

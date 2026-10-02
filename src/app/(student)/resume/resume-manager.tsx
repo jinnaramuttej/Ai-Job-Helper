@@ -123,6 +123,28 @@ export function ResumeManager() {
     }
   }
 
+  async function handleSampleResume() {
+    setError(null);
+    setSavedParsed(false);
+    setUploading(true);
+    try {
+      // Pass a string to trigger the mock parse
+      const next = await parseResume("sample_resume.pdf");
+      setResume(next);
+      setParsedForm({
+        name: next.parsed.name,
+        degree: next.parsed.degree,
+        college: next.parsed.college,
+        graduationYear: next.parsed.graduationYear,
+        skillsText: next.parsed.skills.join(", "),
+      });
+    } catch (uploadError) {
+      setError("Could not load sample resume.");
+    } finally {
+      setUploading(false);
+    }
+  }
+
   function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
     void handleFile(event.target.files?.[0]);
     event.target.value = "";
@@ -230,13 +252,20 @@ export function ResumeManager() {
             <p className="mt-1 text-sm text-muted">
               One PDF or DOC file, up to 5 MB.
             </p>
-            <div className="mt-4">
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
               <Button
                 variant="secondary"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={uploading}
               >
                 Choose file
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={handleSampleResume}
+                disabled={uploading}
+              >
+                Use a sample resume
               </Button>
             </div>
           </div>
@@ -358,7 +387,25 @@ export function ResumeManager() {
             </div>
           ) : null}
         </>
-      ) : null}
+      ) : (
+        <div className="mt-6 rounded-lg border border-line bg-surface p-4 sm:p-6">
+          <h2 className="text-base font-semibold">What you'll see after uploading</h2>
+          <div className="mt-4 grid gap-6 sm:grid-cols-2">
+            <div>
+              <h3 className="text-sm font-medium text-ink">Parsed details</h3>
+              <p className="mt-1 text-[14px] text-muted">
+                We extract your name, education, and skills. You can review and edit them to make sure they are accurate.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-sm font-medium text-ink">ATS feedback</h3>
+              <p className="mt-1 text-[14px] text-muted">
+                You get a score out of 100 on how ATS-friendly your resume is, plus 2-3 actionable tips to improve it.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
