@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { verifySessionToken } from '@/lib/auth/session';
+import { verifySessionToken } from '@/lib/auth/session-utils';
 
 const studentRoutes = ['/jobs', '/recommended', '/saved', '/applications', '/resume', '/profile'];
 
