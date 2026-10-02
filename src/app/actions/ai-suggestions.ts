@@ -44,14 +44,27 @@ export async function getAiJobSuggestions() {
       IMPORTANT: DO NOT include any greetings like "Hello Demo User" or "Hi there". Get straight to the recommendations.
     `;
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-3.8-flash',
-      contents: prompt,
-    });
+    let response;
+    try {
+      response = await ai.models.generateContent({
+        model: 'gemini-3.8-flash',
+        contents: prompt,
+      });
+    } catch (e: any) {
+      if (e.status === 503 || e?.error?.status === 'UNAVAILABLE') {
+        console.warn("gemini-3.8-flash is experiencing high demand, falling back to gemini-1.5-flash...");
+        response = await ai.models.generateContent({
+          model: 'gemini-1.5-flash',
+          contents: prompt,
+        });
+      } else {
+        throw e;
+      }
+    }
 
     return { result: response.text };
   } catch (error: any) {
     console.error("AI Suggestion error:", error);
-    return { error: "Failed to generate AI suggestions. Please try again later." };
+    return { error: "Failed to generate AI suggestions. The AI service might be experiencing high demand. Please try again later." };
   }
 }
