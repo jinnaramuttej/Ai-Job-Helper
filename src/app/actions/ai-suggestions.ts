@@ -26,7 +26,6 @@ export async function getAiJobSuggestions() {
     const prompt = `
       You are an expert career advisor.
       Here is the profile of a student seeking a job:
-      - Name: ${profile.name}
       - Branch: ${profile.branch}
       - Year: ${profile.year}
       - Preferred Location: ${profile.preferredLocation}
@@ -38,10 +37,11 @@ export async function getAiJobSuggestions() {
 
       Based on the student's profile, recommend the top 3 best matching jobs from the list above.
       For each recommendation, provide:
-      1. The Job Title and Company
+      1. The Job Title linked to its apply page. You MUST use this exact markdown format: [Job Title - Company](/jobs/JOB_ID) (Replace JOB_ID with the actual ID from the list).
       2. A personalized, encouraging paragraph explaining exactly why their specific skills and background make them a great fit for this role.
       
-      Format the output as a friendly, professional response using Markdown. Use bullet points for the 3 recommendations.
+      Format the output as a friendly, professional response using Markdown. Use bullet points for the 3 recommendations. 
+      IMPORTANT: DO NOT include any greetings like "Hello Demo User" or "Hi there". Get straight to the recommendations.
     `;
 
     const response = await ai.models.generateContent({
