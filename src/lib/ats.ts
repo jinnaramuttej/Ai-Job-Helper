@@ -15,224 +15,117 @@
 export type AtsSection = "Education" | "Skills" | "Projects" | "Experience";
 
 export type AtsResult = {
-  /** Total score, 0–100. */
   score: number;
-  /** Keyword coverage, 0–60. */
   keywordScore: number;
-  /** Section coverage, 0–40. */
   sectionScore: number;
-  /** Distinct keywords found, in canonical casing. */
+  contactScore: number;
+  lengthScore: number;
+  actionScore: number;
   keywordsFound: string[];
-  sectionsFound: AtsSection[];
-  sectionsMissing: AtsSection[];
-  /** 2–3 tips generated from what is missing. */
+  sectionsFound: string[];
   tips: string[];
 };
 
-export const ATS_SECTIONS: AtsSection[] = [
-  "Education",
-  "Skills",
-  "Projects",
-  "Experience",
+export const ATS_SECTIONS = ["Education", "Skills", "Projects", "Experience", "Summary"];
+
+export const ATS_KEYWORDS = [
+  "JavaScript", "TypeScript", "Python", "Java", "C++", "C#", "Go", "Rust", "Ruby", "PHP", "Swift", "Kotlin", "SQL", "HTML", "CSS",
+  "React", "Angular", "Vue", "Next.js", "Redux", "Tailwind", "Bootstrap",
+  "Node.js", "Express", "Django", "Flask", "Spring", "Rails", "Laravel", "GraphQL", "REST", "API",
+  "machine learning", "data analysis", "data structures", "algorithms", "TensorFlow", "PyTorch", "pandas", "Excel",
+  "MySQL", "PostgreSQL", "MongoDB", "Redis", "Firebase",
+  "AWS", "Azure", "Docker", "Kubernetes", "CI/CD", "Linux", "Git", "GitHub"
 ];
 
-/** Roughly 80 common tech keywords recruiters and ATS tools scan for. */
-export const ATS_KEYWORDS: string[] = [
-  // Languages
-  "JavaScript",
-  "TypeScript",
-  "Python",
-  "Java",
-  "C",
-  "C++",
-  "C#",
-  "Go",
-  "Rust",
-  "Ruby",
-  "PHP",
-  "Swift",
-  "Kotlin",
-  "R",
-  "MATLAB",
-  "SQL",
-  "HTML",
-  "CSS",
-  // Frontend
-  "React",
-  "Angular",
-  "Vue",
-  "Next.js",
-  "Redux",
-  "Tailwind",
-  "Sass",
-  "Bootstrap",
-  "jQuery",
-  // Backend and APIs
-  "Node.js",
-  "Express",
-  "Django",
-  "Flask",
-  "Spring",
-  "Rails",
-  "Laravel",
-  "FastAPI",
-  "GraphQL",
-  "REST",
-  "API",
-  "microservices",
-  // Data and ML
-  "machine learning",
-  "deep learning",
-  "data analysis",
-  "data structures",
-  "algorithms",
-  "NLP",
-  "computer vision",
-  "TensorFlow",
-  "PyTorch",
-  "scikit-learn",
-  "pandas",
-  "NumPy",
-  "Excel",
-  "Tableau",
-  "Power BI",
-  // Databases
-  "MySQL",
-  "PostgreSQL",
-  "MongoDB",
-  "Redis",
-  "SQLite",
-  "Firebase",
-  // Cloud and DevOps
-  "AWS",
-  "Azure",
-  "Google Cloud",
-  "Docker",
-  "Kubernetes",
-  "Terraform",
-  "Jenkins",
-  "CI/CD",
-  "Linux",
-  "Bash",
-  "Git",
-  "GitHub",
-  "GitLab",
-  // Practices and tools
-  "Agile",
-  "Scrum",
-  "testing",
-  "Jest",
-  "Selenium",
-  "Pytest",
-  "Figma",
-  "networking",
-  "OOP",
-  "Webpack",
-  "Vite",
-  "Kafka",
-];
+const ACTION_VERBS = ["built", "developed", "led", "created", "designed", "implemented", "managed", "optimized", "improved"];
 
-const KEYWORD_TARGET = 15;
-const KEYWORD_POINTS = 60 / KEYWORD_TARGET; // 4 points per distinct keyword
-const SECTION_POINTS = 10;
-
-/** High-value keywords we suggest when coverage is low. */
-const SUGGESTED_KEYWORDS = [
-  "Git",
-  "Docker",
-  "AWS",
-  "SQL",
-  "Linux",
-  "Excel",
-  "REST",
-  "Agile",
-];
-
-const SECTION_TIPS: Record<AtsSection, string> = {
-  Education:
-    "Add an Education section with your degree, college, and graduation year.",
-  Skills:
-    "Add a Skills section listing the tools and technologies you know.",
-  Projects:
-    "Add a Projects section that links to 1 or 2 things you have built.",
-  Experience:
-    "Add an Experience section — internships, part-time work, and volunteering all count.",
-};
-
-function escapeRegExp(value: string): string {
+function escapeRegExp(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-/**
- * Matches a keyword as a whole token, case-insensitively. "+", "#" and
- * alphanumerics count as word characters so "C" does not match inside
- * "C++" or "C#", and "Java" does not match inside "JavaScript".
- */
-function containsKeyword(text: string, keyword: string): boolean {
-  const pattern = new RegExp(
-    `(^|[^a-z0-9+#])${escapeRegExp(keyword.toLowerCase())}([^a-z0-9+#]|$)`,
-    "i",
-  );
+function containsWord(text: string, word: string) {
+  const pattern = new RegExp(`(^|[^a-z0-9+#])${escapeRegExp(word.toLowerCase())}([^a-z0-9+#]|$)`, "i");
   return pattern.test(text);
 }
 
-function formatSuggestionList(items: string[]): string {
-  if (items.length <= 1) return items.join("");
-  if (items.length === 2) return `${items[0]} or ${items[1]}`;
-  return `${items.slice(0, -1).join(", ")}, or ${items[items.length - 1]}`;
-}
-
-function buildTips(
-  sectionsMissing: AtsSection[],
-  keywordsFound: string[],
-): string[] {
-  const tips: string[] = sectionsMissing.map((section) => SECTION_TIPS[section]);
-
-  if (keywordsFound.length < KEYWORD_TARGET) {
-    const foundSet = new Set(keywordsFound.map((k) => k.toLowerCase()));
-    const suggestions = SUGGESTED_KEYWORDS.filter(
-      (k) => !foundSet.has(k.toLowerCase()),
-    ).slice(0, 3);
-    if (suggestions.length > 0) {
-      tips.push(
-        `Mention tools like ${formatSuggestionList(suggestions)} if you have used them.`,
-      );
-    }
-  }
-
-  if (tips.length === 0) {
-    tips.push(
-      "Strong coverage — mirror the wording of each job description you apply to.",
-    );
-  }
-
-  return tips.slice(0, 3);
-}
-
 export function scoreResume(text: string): AtsResult {
-  const keywordsFound = ATS_KEYWORDS.filter((keyword) =>
-    containsKeyword(text, keyword),
-  );
-  const keywordScore = Math.min(
-    60,
-    Math.round(keywordsFound.length * KEYWORD_POINTS),
-  );
+  // 1. Keyword coverage (40 pts)
+  const keywordsFound = ATS_KEYWORDS.filter(k => containsWord(text, k));
+  const keywordScore = Math.min(40, Math.round((keywordsFound.length / 15) * 40));
+  const keywordLost = 40 - keywordScore;
 
-  const sectionsFound = ATS_SECTIONS.filter((section) =>
-    containsKeyword(text, section),
-  );
-  const sectionsMissing = ATS_SECTIONS.filter(
-    (section) => !sectionsFound.includes(section),
-  );
-  const sectionScore = sectionsFound.length * SECTION_POINTS;
+  // 2. Sections found (25 pts)
+  const sectionsFound = ATS_SECTIONS.filter(s => containsWord(text, s));
+  const sectionScore = sectionsFound.length * 5;
+  const sectionLost = 25 - sectionScore;
+
+  // 3. Contact info (15 pts)
+  let contactScore = 0;
+  const hasEmail = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/.test(text);
+  const hasPhone = /\+?\d[\d\s.-]{8,}\d/.test(text);
+  const hasLink = /linkedin\.com|github\.com/i.test(text);
+  if (hasEmail) contactScore += 5;
+  if (hasPhone) contactScore += 5;
+  if (hasLink) contactScore += 5;
+  const contactLost = 15 - contactScore;
+
+  // 4. Length sanity (10 pts)
+  const words = text.split(/\s+/).filter(w => w.length > 0).length;
+  let lengthScore = 0;
+  if (words >= 300 && words <= 900) {
+    lengthScore = 10;
+  } else if (words > 150 && words < 1200) {
+    lengthScore = 5;
+  }
+  const lengthLost = 10 - lengthScore;
+
+  // 5. Action verbs & quantified results (10 pts)
+  const hasAction = ACTION_VERBS.some(v => containsWord(text, v));
+  const hasNumbers = /\d+%|\b\d+\b/.test(text) && !/20\d\d/.test(text); // Basic check for numbers that aren't years
+  // Let's just do a simpler number check
+  const hasQuantified = /\d{1,3}(?:,\d{3})*(?:\.\d+)?%?/.test(text);
+  
+  let actionScore = 0;
+  if (hasAction) actionScore += 5;
+  if (hasNumbers || hasQuantified) actionScore += 5;
+  const actionLost = 10 - actionScore;
+
+  // Total
+  const score = keywordScore + sectionScore + contactScore + lengthScore + actionScore;
+
+  // Build tips ordered by points lost
+  const potentialTips = [
+    { lost: keywordLost, tip: "Include more relevant industry keywords to match ATS systems." },
+    { lost: sectionLost, tip: "Make sure you have clear sections like Education, Skills, Projects, and Experience." },
+    { lost: contactLost, tip: "Include your email, phone number, and a link to LinkedIn or GitHub." },
+    { lost: lengthLost, tip: words < 300 ? "Your resume is too short. Aim for 300-900 words." : "Your resume is too long. Keep it concise (under 900 words)." },
+    { lost: actionLost, tip: "Start bullet points with action verbs and include quantified results (numbers/percentages)." },
+  ];
+
+  const tips = potentialTips
+    .filter(t => t.lost > 0)
+    .sort((a, b) => b.lost - a.lost)
+    .map(t => t.tip);
 
   return {
-    score: keywordScore + sectionScore,
+    score,
     keywordScore,
     sectionScore,
+    contactScore,
+    lengthScore,
+    actionScore,
     keywordsFound,
     sectionsFound,
-    sectionsMissing,
-    tips: buildTips(sectionsMissing, keywordsFound),
+    tips: tips.length > 0 ? tips : ["Great job! Your resume hits all the ATS benchmarks."],
   };
 }
+
+export function checkJobMatch(resumeText: string, jobRequiredSkills: string[]): { missingSkills: string[], keywordCoveragePercent: number } {
+  const resumeLower = resumeText.toLowerCase();
+  const matched = jobRequiredSkills.filter(s => containsWord(resumeText, s));
+  const missingSkills = jobRequiredSkills.filter(s => !matched.includes(s));
+  const keywordCoveragePercent = jobRequiredSkills.length === 0 ? 100 : Math.round((matched.length / jobRequiredSkills.length) * 100);
+  
+  return { missingSkills, keywordCoveragePercent };
+}
+

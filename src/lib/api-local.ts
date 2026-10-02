@@ -357,6 +357,19 @@ export async function saveParsedResume(
   if (resume) {
     writeJson(RESUME_KEY, { ...resume, parsed });
   }
+
+  // Update profile skills
+  const profile = await getProfile();
+  const currentSkills = new Set(profile.skills.map(s => s.toLowerCase()));
+  const newSkills = parsed.skills.filter(s => !currentSkills.has(s.toLowerCase()));
+  
+  if (newSkills.length > 0) {
+    await saveProfile({
+      ...profile,
+      skills: [...profile.skills, ...newSkills]
+    });
+  }
+
   return parsed;
 }
 

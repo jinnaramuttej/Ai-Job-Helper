@@ -10,12 +10,21 @@
 
 import { SKILL_TABLE, displayName } from "./skills";
 
+export type Confidence = "found" | "guessed" | "missing";
+
+export type ParsedField<T> = {
+  value: T;
+  confidence: Confidence;
+};
+
 export type ParsedResumeFields = {
-  name: string;
-  degree: string;
-  college: string;
-  graduationYear: string;
-  skills: string[];
+  name: ParsedField<string>;
+  email: ParsedField<string>;
+  phone: ParsedField<string>;
+  degree: ParsedField<string>;
+  college: ParsedField<string>;
+  graduationYear: ParsedField<string>;
+  skills: ParsedField<string[]>;
 };
 
 export type ResumeParseOutcome = ParsedResumeFields & {
@@ -87,86 +96,6 @@ function cleanLine(line: string): string {
   return line.replace(/\s+/g, " ").trim();
 }
 
-/** Picks a likely full name from the first few lines. */
-function extractName(lines: string[], email: string): string {
-  for (const line of lines.slice(0, 6)) {
-    if (!line || SECTION_WORDS.test(line)) continue;
-    if (EMAIL_PATTERN.test(line) || /\d/.test(line)) continue;
-    if (line.includes("@") || line.includes("http")) continue;
-    // Degrees and institutions are not names.
-    if (DEGREE_PATTERN.test(line) || COLLEGE_WORDS.test(line)) continue;
-
-    const words = line.split(" ").filter(Boolean);
-    if (words.length < 2 || words.length > 5) continue;
-    if (line.length > 60) continue;
-
-    const looksLikeName = words.every((word) =>
-      /^[A-Za-z][A-Za-z'.-]*$/.test(word),
-    );
-    if (!looksLikeName) continue;
-
-    // Title-case an all-caps header like "ANANYA SHARMA".
-    return words
-      .map(
-        (word) =>
-          word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(),
-      )
-      .join(" ");
-  }
-
-  // Fall back to the local part of the email address.
-  const local = email.split("@")[0] ?? "";
-  if (!local) return "";
-  return local
-    .split(/[._-]+/)
-    .filter(Boolean)
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
-    .join(" ");
-}
-
-function extractDegree(text: string): string {
-  const match = text.match(DEGREE_PATTERN);
-  if (!match) return "";
-  return cleanLine(match[1]).replace(/[,.;]+$/, "");
-}
-
-function extractCollege(lines: string[]): string {
-  const candidate = lines.find(
-    (line) =>
-      COLLEGE_WORDS.test(line) &&
-      // Skip contact lines: "name@college.edu" is not an institution.
-      !EMAIL_PATTERN.test(line) &&
-      !line.includes("@") &&
-      !line.includes("http"),
-  );
-  if (!candidate) return "";
-
-  // Keep the segment that actually names the institution.
-  const segment =
-    candidate
-      .split(/\s[—–-]\s|,(?=\s*[A-Z])/)
-      .find((part) => COLLEGE_WORDS.test(part)) ?? candidate;
-  return cleanLine(segment).replace(/[,.;]+$/, "").slice(0, 120);
-}
-
-function extractGraduationYear(text: string): string {
-  const explicit = text.match(GRADUATION_PATTERN);
-  if (explicit) {
-    const year = explicit[0].match(/(19|20)\d{2}/);
-    if (year) return year[0];
-  }
-  // Otherwise take the latest plausible year mentioned.
-  const years = Array.from(text.matchAll(YEAR_PATTERN))
-    .map((match) => Number.parseInt(match[0], 10))
-    .filter((year) => year >= 1990 && year <= new Date().getFullYear() + 8);
-  if (years.length === 0) return "";
-  return String(Math.max(...years));
-}
-
-/**
- * Matches resume text against the skills alias dictionary and returns
- * display names of the distinct skills found.
- */
 export function extractSkills(text: string): string[] {
   const haystack = ` ${text.toLowerCase().replace(/\s+/g, " ")} `;
   const found: string[] = [];
@@ -176,10 +105,7 @@ export function extractSkills(text: string): string[] {
     const hit = variants.some((variant) => {
       const needle = variant.toLowerCase();
       const escaped = needle.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      const pattern = new RegExp(
-        `(^|[^a-z0-9+#])${escaped}([^a-z0-9+#]|$)`,
-        "i",
-      );
+      const pattern = new RegExp(`(^|[^a-z0-9+#])${escaped}([^a-z0-9+#]|$)`, "i");
       return pattern.test(haystack);
     });
     if (hit) found.push(displayName(entry.name));
@@ -191,14 +117,61 @@ export function extractSkills(text: string): string[] {
 export function parseResumeText(text: string): ParsedResumeFields {
   const normalizedText = text.replace(/\r\n?/g, "\n");
   const lines = normalizedText.split("\n").map(cleanLine);
-  const email = normalizedText.match(EMAIL_PATTERN)?.[0] ?? "";
+  
+  let nameValue = "";
+  let nameConfidence: Confidence = "missing";
+  const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
+  const phoneRegex = /\+?\d[\d\s.-]{8,}\d/;
+  const headingRegex = /^(education|skills|experience|projects|summary|profile|contact)\b/i;
+
+  for (const line of lines) {
+    if (line.length > 0 && !emailRegex.test(line) && !headingRegex.test(line)) {
+      // Just taking the first line for name as requested
+      nameValue = line.slice(0, 50);
+      nameConfidence = "guessed";
+      break;
+    }
+  }
+
+  const emailMatch = normalizedText.match(emailRegex);
+  const emailValue = emailMatch ? emailMatch[0] : "";
+  const emailConfidence: Confidence = emailMatch ? "found" : "missing";
+
+  const phoneMatch = normalizedText.match(phoneRegex);
+  const phoneValue = phoneMatch ? phoneMatch[0] : "";
+  const phoneConfidence: Confidence = phoneMatch ? "found" : "missing";
+
+  const degreeRegex = /(B\.Tech|B\.E|B\.Sc|MCA|M\.Tech|Bachelor|Master)[^\n]*/i;
+  const degreeMatch = normalizedText.match(degreeRegex);
+  const degreeValue = degreeMatch ? degreeMatch[0].trim() : "";
+  const degreeConfidence: Confidence = degreeMatch ? "found" : "missing";
+
+  const yearRegex = /20\d{2}/g;
+  const yearMatches = [...normalizedText.matchAll(yearRegex)];
+  let yearValue = "";
+  let yearConfidence: Confidence = "missing";
+  if (yearMatches.length > 0) {
+    const years = yearMatches.map(m => parseInt(m[0], 10));
+    yearValue = Math.max(...years).toString();
+    yearConfidence = "guessed";
+  }
+
+  const collegeRegex = /[^\n]*(University|Institute|College)[^\n]*/i;
+  const collegeMatch = normalizedText.match(collegeRegex);
+  const collegeValue = collegeMatch ? collegeMatch[0].trim() : "";
+  const collegeConfidence: Confidence = collegeMatch ? "guessed" : "missing";
+
+  const foundSkills = extractSkills(normalizedText);
+  const skillsConfidence: Confidence = foundSkills.length > 0 ? "found" : "missing";
 
   return {
-    name: extractName(lines, email),
-    degree: extractDegree(normalizedText),
-    college: extractCollege(lines),
-    graduationYear: extractGraduationYear(normalizedText),
-    skills: extractSkills(normalizedText),
+    name: { value: nameValue, confidence: nameConfidence },
+    email: { value: emailValue, confidence: emailConfidence },
+    phone: { value: phoneValue, confidence: phoneConfidence },
+    degree: { value: degreeValue, confidence: degreeConfidence },
+    college: { value: collegeValue, confidence: collegeConfidence },
+    graduationYear: { value: yearValue, confidence: yearConfidence },
+    skills: { value: foundSkills, confidence: skillsConfidence },
   };
 }
 

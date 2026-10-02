@@ -72,6 +72,13 @@ export async function POST(request: Request) {
 
   const parsed = await parseResumeFile(buffer, file.type, file.name);
 
+  if (parsed.text.length < 200) {
+    return NextResponse.json(
+      { error: "We could not read text from this file. It may be a scanned image. Upload a text-based PDF or DOCX." },
+      { status: 400 }
+    );
+  }
+
   // Replace any previous resume for this student (one resume per student).
   const { data: existing } = await supabase
     .from("resumes")
@@ -111,11 +118,11 @@ export async function POST(request: Request) {
     {
       resume_id: resumeRow.id,
       student_id: user.id,
-      name: parsed.name,
-      degree: parsed.degree,
-      college: parsed.college,
-      graduation_year: parsed.graduationYear,
-      skills: parsed.skills,
+      name: parsed.name.value,
+      degree: parsed.degree.value,
+      college: parsed.college.value,
+      graduation_year: parsed.graduationYear.value,
+      skills: parsed.skills.value,
       raw_text: parsed.text,
     },
     { onConflict: "resume_id" },
