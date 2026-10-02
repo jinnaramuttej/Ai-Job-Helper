@@ -6,7 +6,7 @@ import { JsonFileUserStore } from '../src/lib/auth/store';
 import fs from 'fs/promises';
 import path from 'path';
 import { POST as loginPOST } from '../src/app/api/auth/login/route';
-import { proxy } from '../src/proxy';
+import proxy from '../src/proxy';
 import { NextRequest } from 'next/server';
 
 process.env.AUTH_SECRET = 'this_is_a_very_long_secret_key_for_testing_purposes_only';

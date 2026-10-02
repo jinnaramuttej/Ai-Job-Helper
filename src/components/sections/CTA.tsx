@@ -3,6 +3,7 @@
 import { useRef } from "react"
 import { gsap, useGSAP } from "@/lib/gsap"
 import MagneticButton from "@/components/ui/MagneticButton"
+import Link from "next/link"
 
 export default function CTA() {
     const container = useRef<HTMLDivElement>(null)
@@ -37,9 +38,11 @@ export default function CTA() {
                     Join the students already using AI Job Helper to land their dream internships and entry-level roles.
                 </p>
 
-                <MagneticButton className="mt-4 cursor-pointer rounded-full bg-[#ededed] px-10 py-4 text-base font-semibold text-[#080808] transition-colors hover:bg-white">
-                    Get started free
-                </MagneticButton>
+                <Link href="/signup">
+                    <MagneticButton className="mt-4 cursor-pointer rounded-full bg-[#ededed] px-10 py-4 text-base font-semibold text-[#080808] transition-colors hover:bg-white">
+                        Get started free
+                    </MagneticButton>
+                </Link>
             </div>
         </section>
     )
