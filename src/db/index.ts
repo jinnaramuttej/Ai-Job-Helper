@@ -4,7 +4,7 @@ import { Pool } from "pg";
 const databaseUrl = process.env.DATABASE_URL;
 
 if (!databaseUrl) {
-  throw new Error("DATABASE_URL is required");
+  console.warn("DATABASE_URL is not set. Database connections will fail.");
 }
 
 const globalForDb = globalThis as typeof globalThis & {
