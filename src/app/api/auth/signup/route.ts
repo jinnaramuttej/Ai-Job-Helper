@@ -39,9 +39,10 @@ export async function POST(req: Request) {
     
     return NextResponse.json({ success: true });
   } catch (error) {
+    console.error("Signup error details:", error);
     if (error instanceof Error && error.message === 'Email already exists') {
       return NextResponse.json({ errors: { email: ['Email already exists'] } }, { status: 400 });
     }
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error', details: error instanceof Error ? error.message : String(error) }, { status: 500 });
   }
 }

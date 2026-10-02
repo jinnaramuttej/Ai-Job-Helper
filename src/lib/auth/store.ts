@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
+import os from 'os';
 import bcrypt from 'bcryptjs';
-
 export interface User {
   id: string;
   email: string;
@@ -107,5 +107,5 @@ export class JsonFileUserStore implements UserStore {
   }
 }
 
-const dataDir = process.env.VERCEL ? '/tmp' : path.join(process.cwd(), 'data');
+const dataDir = process.env.NODE_ENV === 'production' ? os.tmpdir() : path.join(process.cwd(), 'data');
 export const store = new JsonFileUserStore(path.join(dataDir, 'users.json'));
