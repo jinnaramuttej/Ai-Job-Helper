@@ -12,6 +12,7 @@ export type SessionPayload = {
   sub: string;
   role: string;
   name: string;
+  email: string;
 };
 
 export async function createSessionToken(payload: SessionPayload) {

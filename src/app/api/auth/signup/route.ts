@@ -34,7 +34,7 @@ export async function POST(req: Request) {
       role: 'student'
     });
     
-    const token = await createSessionToken({ sub: user.id, role: user.role, name: user.name });
+    const token = await createSessionToken({ sub: user.id, role: user.role, name: user.name, email: user.email });
     await setSession(token);
     
     return NextResponse.json({ success: true });

@@ -197,12 +197,9 @@ export async function signOut(): Promise<void> {
 export async function getCurrentUser(): Promise<CurrentUser | null> {
   if (typeof window === "undefined") {
     const { getSession } = await import('@/lib/auth/session');
-    const { store } = await import('@/lib/auth/store');
     const session = await getSession();
     if (!session) return null;
-    const user = await store.findById(session.sub);
-    if (!user) return null;
-    return { id: user.id, name: user.name, email: user.email };
+    return { id: session.sub, name: session.name, email: session.email };
   } else {
     try {
       const res = await fetch('/api/auth/me');
@@ -442,12 +439,9 @@ export async function adminLogin(
 export async function getAdminUser(): Promise<AdminUser | null> {
   if (typeof window === "undefined") {
     const { getSession } = await import('@/lib/auth/session');
-    const { store } = await import('@/lib/auth/store');
     const session = await getSession();
     if (!session || session.role !== 'admin') return null;
-    const user = await store.findById(session.sub);
-    if (!user) return null;
-    return { name: user.name, email: user.email };
+    return { name: session.name, email: session.email };
   } else {
     try {
       const res = await fetch('/api/auth/me');

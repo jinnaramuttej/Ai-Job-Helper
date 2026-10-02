@@ -8,16 +8,11 @@ export async function GET() {
     return NextResponse.json(null, { status: 401 });
   }
   
-  const user = await store.findById(session.sub);
-  if (!user) {
-    return NextResponse.json(null, { status: 401 });
-  }
-  
   return NextResponse.json({
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    role: user.role,
-    avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(user.name)}`
+    id: session.sub,
+    name: session.name,
+    email: session.email,
+    role: session.role,
+    avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(session.name)}`
   });
 }
