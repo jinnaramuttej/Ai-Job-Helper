@@ -4,7 +4,7 @@ import { verifySessionToken } from '@/lib/auth/session';
 
 const studentRoutes = ['/jobs', '/recommended', '/saved', '/applications', '/resume', '/profile'];
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   
   const isStudentRoute = studentRoutes.some(route => pathname === route || pathname.startsWith(`${route}/`));
