@@ -21,21 +21,45 @@ export default async function proxy(req: NextRequest) {
     session = await verifySessionToken(token);
   }
 
-  if (isAuthRoute) {
-    if (session) {
-      return NextResponse.redirect(new URL('/jobs', req.url));
+  const isAdminLogin = pathname === '/admin/login';
+
+  // Admin routing logic
+  if (isAdminRoute) {
+    if (isAdminLogin) {
+      if (session?.role === 'admin') {
+        return NextResponse.redirect(new URL('/admin/jobs', req.url));
+      }
+      return NextResponse.next();
+    }
+    
+    // Protected admin routes
+    if (!session || session.role !== 'admin') {
+      const nextUrl = new URL('/admin/login', req.url);
+      nextUrl.searchParams.set('next', pathname);
+      return NextResponse.redirect(nextUrl);
     }
     return NextResponse.next();
   }
 
-  if (!session) {
-    const nextUrl = new URL('/login', req.url);
-    nextUrl.searchParams.set('next', pathname);
-    return NextResponse.redirect(nextUrl);
+  // Student routing logic
+  if (isAuthRoute) {
+    if (session?.role === 'student') {
+      return NextResponse.redirect(new URL('/jobs', req.url));
+    }
+    // If admin is on student login page, redirect them to admin jobs
+    if (session?.role === 'admin') {
+      return NextResponse.redirect(new URL('/admin/jobs', req.url));
+    }
+    return NextResponse.next();
   }
 
-  if (isAdminRoute && session.role !== 'admin') {
-    return new NextResponse('Forbidden', { status: 403 });
+  if (isStudentRoute) {
+    if (!session || session.role !== 'student') {
+      const nextUrl = new URL('/login', req.url);
+      nextUrl.searchParams.set('next', pathname);
+      return NextResponse.redirect(nextUrl);
+    }
+    return NextResponse.next();
   }
 
   return NextResponse.next();
