@@ -218,8 +218,20 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
 /* Profile ---------------------------------------------------------------- */
 
 export async function getProfile(): Promise<Profile> {
-  if (!isSupabaseConfigured()) return local.getProfile();
   const userId = await getSessionUserId();
+  
+  if (!isSupabaseConfigured()) {
+    const profile = await local.getProfile();
+    if (userId) {
+      const user = await getCurrentUser();
+      if (user) {
+        profile.name = user.name || profile.name;
+        profile.email = user.email || profile.email;
+      }
+    }
+    return profile;
+  }
+  
   if (!userId) return BLANK_PROFILE;
   const row = await getProfileRow(userId);
   return row ? toProfile(row) : BLANK_PROFILE;
