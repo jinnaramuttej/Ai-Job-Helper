@@ -37,11 +37,10 @@ export async function getAiJobSuggestions() {
 
       Based on the student's profile, recommend the top 3 best matching jobs from the list above.
       For each recommendation, provide:
-      1. The Job Title linked to its apply page. You MUST use this exact markdown format: [Job Title - Company](/jobs/JOB_ID) (Replace JOB_ID with the actual ID from the list).
-      2. A personalized, encouraging paragraph explaining exactly why their specific skills and background make them a great fit for this role.
+      1. The Job Title linked to its apply page using exactly this markdown format: [Job Title - Company](/jobs/JOB_ID)
+      2. A brief 1-2 sentence explanation of why it fits. Be extremely concise.
       
-      Format the output as a friendly, professional response using Markdown. Use bullet points for the 3 recommendations. 
-      IMPORTANT: DO NOT include any greetings like "Hello Demo User" or "Hi there". Get straight to the recommendations.
+      Format using Markdown bullet points. DO NOT include greetings like "Hello". Be direct and brief.
     `;
 
     let response;
@@ -52,9 +51,9 @@ export async function getAiJobSuggestions() {
       });
     } catch (e: any) {
       if (e.status === 503 || e?.error?.status === 'UNAVAILABLE') {
-        console.warn("gemini-3.8-flash is experiencing high demand, falling back to gemini-1.5-flash...");
+        console.warn("gemini-3.8-flash is experiencing high demand, falling back to gemini-3.6-flash...");
         response = await ai.models.generateContent({
-          model: 'gemini-1.5-flash',
+          model: 'gemini-3.6-flash',
           contents: prompt,
         });
       } else {
