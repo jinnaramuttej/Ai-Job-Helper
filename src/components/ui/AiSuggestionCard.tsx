@@ -28,19 +28,17 @@ export function AiSuggestionCard() {
   };
 
   return (
-    <div className="rounded-xl border border-[#222] bg-gradient-to-b from-[#111] to-[#0a0a0a] p-6 shadow-xl relative overflow-hidden mt-6 mb-8">
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 via-fuchsia-500 to-pink-500"></div>
-      
-      <div className="flex items-center gap-3 mb-4">
-        <div className="p-2 bg-purple-500/10 rounded-lg text-purple-400">
+    <div className="mt-6 mb-8 rounded-[10px] border border-line bg-surface p-6">
+      <div className="mb-4 flex items-center gap-3">
+        <div className="rounded-lg bg-accent-soft p-2 text-accent">
           <Bot size={24} />
         </div>
         <div>
-          <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+          <h2 className="flex items-center gap-2 text-xl font-semibold text-ink">
             AI Job Matchmaker
-            <Sparkles size={16} className="text-fuchsia-400" />
+            <Sparkles size={16} className="text-accent" />
           </h2>
-          <p className="text-sm text-[#888]">Get personalized recommendations powered by Gemini</p>
+          <p className="text-sm text-muted">Get personalized recommendations powered by Gemini</p>
         </div>
       </div>
 
@@ -48,7 +46,7 @@ export function AiSuggestionCard() {
         <button
           onClick={handleGenerate}
           disabled={loading}
-          className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-white px-4 py-3 text-sm font-medium text-black transition-colors hover:bg-[#ddd] disabled:opacity-50"
+          className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-strong disabled:opacity-50"
         >
           {loading ? (
             <>
@@ -62,11 +60,11 @@ export function AiSuggestionCard() {
       )}
 
       {error && (
-        <div className="mt-4 p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+        <div className="mt-4 rounded-lg border border-danger bg-danger/10 p-4 text-sm text-danger">
           {error}
           <button 
             onClick={handleGenerate}
-            className="block mt-3 underline hover:text-red-300"
+            className="mt-3 block font-medium underline"
           >
             Try Again
           </button>
@@ -75,13 +73,13 @@ export function AiSuggestionCard() {
 
       {result && (
         <div className="mt-4 space-y-4">
-          <div className="prose prose-invert prose-sm max-w-none text-[#ccc]">
+          <div className="prose prose-sm max-w-none text-ink">
             <ReactMarkdown>{result}</ReactMarkdown>
           </div>
           <button
             onClick={handleGenerate}
             disabled={loading}
-            className="flex items-center gap-2 text-sm text-purple-400 hover:text-purple-300 transition-colors"
+            className="flex items-center gap-2 text-sm font-medium text-accent transition-colors hover:text-accent-strong"
           >
             {loading ? <Loader2 className="animate-spin" size={14} /> : <Sparkles size={14} />}
             Regenerate

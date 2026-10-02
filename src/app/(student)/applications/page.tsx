@@ -32,29 +32,29 @@ export default function ApplicationsPage() {
   }
 
   return (
-    <section className="max-w-4xl px-8 py-10">
-      <h1 className="text-3xl font-semibold tracking-tight text-white mb-8">Your Applications</h1>
+    <section>
+      <h1 className="text-2xl font-semibold tracking-tight">Your Applications</h1>
       
       {applications.length === 0 ? (
-        <div className="rounded-xl border border-[#222] bg-[#0d0d0d] p-8 text-center text-[#888]">
+        <div className="mt-8 rounded-[10px] border border-line bg-surface p-8 text-center text-muted">
           <p>You haven&apos;t applied to any jobs yet.</p>
-          <Link href="/jobs" className="mt-4 inline-block text-white hover:underline">
+          <Link href="/jobs" className="mt-4 inline-block font-medium text-ink hover:underline">
             Browse Jobs
           </Link>
         </div>
       ) : (
-        <div className="grid gap-4">
+        <div className="mt-8 grid gap-4">
           {applications.map(({ application, job }) => (
-            <div key={application.id} className="rounded-xl border border-[#222] bg-[#0d0d0d] p-6 flex items-center justify-between">
+            <div key={application.id} className="rounded-[10px] border border-line bg-surface p-6 flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-medium text-white">{job?.title || "Unknown Job"}</h2>
-                <p className="text-sm text-[#888]">{job?.company} • {job?.location}</p>
-                <p className="mt-2 text-xs text-[#555]">
+                <h2 className="text-lg font-semibold text-ink">{job?.title || "Unknown Job"}</h2>
+                <p className="text-[14px] text-muted">{job?.company} • {job?.location}</p>
+                <p className="mt-2 text-[12px] text-muted">
                   Applied on {new Date(application.appliedAt).toLocaleDateString()}
                 </p>
               </div>
               <div className="text-right">
-                <span className="inline-flex items-center rounded-full bg-green-500/10 px-3 py-1 text-xs font-medium text-green-400">
+                <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">
                   Applied
                 </span>
               </div>
