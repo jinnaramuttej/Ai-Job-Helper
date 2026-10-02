@@ -4,10 +4,10 @@ import { useRef } from "react"
 import { gsap, useGSAP } from "@/lib/gsap"
 
 const stats = [
-    { value: 10000, suffix: "+", label: "Teams onboarded" },
-    { value: 40, suffix: "%", label: "Less manual work" },
-    { value: 2.5, suffix: "x", label: "Faster turnaround", decimals: 1 },
-    { value: 24, suffix: "/7", label: "Always in sync" },
+    { value: 5000, suffix: "+", label: "Students onboarded" },
+    { value: 80, suffix: "%", label: "Less manual searching" },
+    { value: 3.5, suffix: "x", label: "More interview invites", decimals: 1 },
+    { value: 24, suffix: "/7", label: "Always optimizing" },
 ]
 
 export default function Stats() {

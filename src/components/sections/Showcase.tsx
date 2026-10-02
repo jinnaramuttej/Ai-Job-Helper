@@ -5,20 +5,20 @@ import { gsap, useGSAP, ScrollTrigger } from "@/lib/gsap"
 
 const panels = [
     {
-        title: "Dashboard",
-        description: "See everything that matters at a glance, updated in real time as your team works.",
+        title: "Job Matching",
+        description: "AI reads your resume and scores your fit for thousands of entry-level roles automatically.",
     },
     {
-        title: "Automations",
-        description: "Chain together the busywork so it runs itself in the background, every single time.",
+        title: "Resume Analysis",
+        description: "Identify exactly which skills you are missing for your desired role before you apply.",
     },
     {
-        title: "Reports",
-        description: "Instant summaries and trends, generated the moment new data comes in.",
+        title: "Application Tracking",
+        description: "See the status of all your applications and saved jobs in a clean, intuitive dashboard.",
     },
     {
-        title: "Integrations",
-        description: "Connects to the tools your team already uses, no migration required.",
+        title: "Role Preparation",
+        description: "Get personalized insights on how to improve your chances for specific internships.",
     },
 ]
 

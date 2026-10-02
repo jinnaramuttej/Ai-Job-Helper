@@ -5,28 +5,28 @@ import { gsap, useGSAP } from "@/lib/gsap"
 
 const features = [
     {
-        title: "Automate the busywork",
-        description: "Velox handles repetitive tasks in the background so your team can stay focused on the work that actually moves the needle.",
+        title: "Automate your job search",
+        description: "AI Job Helper matches your resume to hundreds of roles automatically, saving you hours of digging.",
     },
     {
-        title: "Understand in seconds",
-        description: "Summaries, insights and next steps are generated the moment new data lands, no digging required.",
+        title: "Understand your gaps",
+        description: "Get instant feedback on missing skills so you can tailor your application before you hit submit.",
     },
     {
-        title: "Built for how teams work",
-        description: "Every workflow adapts to your team's existing tools instead of forcing you into a new one.",
+        title: "Built for college students",
+        description: "Focus on internships and entry-level roles that actually match your graduation year and branch.",
     },
     {
-        title: "Stay in sync",
-        description: "Every update is reflected across your tools instantly, so nobody is ever working from stale information.",
+        title: "Stay organized",
+        description: "Track all your saved jobs and applied roles in one place without messy spreadsheets.",
     },
     {
         title: "Secure by default",
-        description: "Your data is encrypted end-to-end and never used to train models outside your workspace.",
+        description: "Your data is encrypted end-to-end and never sold to third-party recruiters without your consent.",
     },
     {
         title: "Scales with you",
-        description: "From a two-person team to a thousand-person org, Velox adapts without slowing down.",
+        description: "From your first internship to your full-time role, AI Job Helper adapts to your career stage.",
     },
 ]
 
@@ -51,7 +51,7 @@ export default function Features() {
     return (
         <section ref={container} id="features" className="min-h-screen flex flex-col items-center justify-center gap-16 py-32 px-8 sm:px-12 lg:px-20 xl:px-28 text-center">
             <h2 className="text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight max-w-3xl mx-auto">
-                Everything your team needs, nothing it doesn&apos;t.
+                Everything you need to land the job.
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10 w-full max-w-6xl text-center mx-10">

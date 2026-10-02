@@ -34,7 +34,7 @@ export default function CTA() {
                 </h2>
 
                 <p className="max-w-xl text-[clamp(1rem,2vw,1.25rem)] leading-relaxed text-[#888]">
-                    Join the teams already using Velox to cut busywork and move at the speed of thought.
+                    Join the students already using AI Job Helper to land their dream internships and entry-level roles.
                 </p>
 
                 <MagneticButton className="mt-4 cursor-pointer rounded-full bg-[#ededed] px-10 py-4 text-base font-semibold text-[#080808] transition-colors hover:bg-white">
