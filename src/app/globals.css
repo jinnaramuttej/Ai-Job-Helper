@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+/*
+ * AI Job Finder — design tokens
+ * Calm, readable, cream paper feel with one green accent.
+ * No shadows, gradients, glassmorphism, or animations
+ * (only 150ms color transitions on hover, applied per element).
+ */
+@theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", sans-serif;
+
+  /* Colors */
+  --color-bg: #f7f3ea; /* page background */
+  --color-surface: #fffdf8; /* cards, inputs */
+  --color-ink: #1f2328; /* primary text */
+  --color-muted: #6b6558; /* secondary text */
+  --color-line: #e4ddcc; /* 1px borders */
+  --color-accent: #2f5d50; /* buttons, links, active states */
+  --color-accent-strong: #295147; /* darker step of accent (primary button hover) */
+  --color-accent-soft: #e5ede6; /* selected / hover backgrounds */
+  --color-danger: #a63d2f; /* destructive actions, errors */
+
+  /* Radii: 8px inputs & buttons, 10px cards */
+  --radius-md: 0.5rem;
+  --radius-lg: 0.625rem;
+}
+
+@layer base {
+  html {
+    /* Body copy targets 14–15px */
+    font-size: 14px;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+    line-height: 1.55;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Visible keyboard focus on every control */
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: var(--radius-md);
+  }
+
+  ::selection {
+    background-color: var(--color-accent-soft);
+  }
+}
