@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { RecommendedBlock } from "@/components/recommended";
 import { getCurrentUser, getStudentApplications, getProfile, getRecommendedJobs, getResume } from "@/lib/api";
+import { calculateCompleteness } from "@/lib/profile-utils";
+import { JobsClient } from "./jobs-client";
 
 export const metadata: Metadata = {
   title: "Jobs",
@@ -22,19 +25,7 @@ export default async function JobsPage() {
     
     applicationsSent = applications.length;
     matchedJobsCount = recommended.filter(r => r.match.score >= 50).length;
-    
-    // Calculate completeness: name, branch, year, location, skills, roles, resume (7 fields total)
-    let filled = 0;
-    const total = 7;
-    if (profile.name) filled++;
-    if (profile.branch) filled++;
-    if (profile.year) filled++;
-    if (profile.preferredLocation) filled++;
-    if (profile.skills && profile.skills.length > 0) filled++;
-    if (profile.preferredRoles && profile.preferredRoles.length > 0) filled++;
-    if (resume) filled++;
-    
-    profileCompleteness = `${Math.round((filled / total) * 100)}%`;
+    profileCompleteness = `${calculateCompleteness(profile, !!resume)}%`;
   }
 
   // Calculate time-based greeting
@@ -82,9 +73,9 @@ export default async function JobsPage() {
 
       <RecommendedBlock />
       <h2 className="mt-8 text-base font-semibold">All jobs</h2>
-      <p className="mt-2 text-[15px] text-muted">
-        The full job list with search and filters arrives in the next phase.
-      </p>
+      <Suspense fallback={<div className="mt-8 text-muted">Loading jobs...</div>}>
+        <JobsClient />
+      </Suspense>
     </section>
   );
 }

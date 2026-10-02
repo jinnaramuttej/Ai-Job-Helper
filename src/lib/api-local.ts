@@ -170,6 +170,38 @@ export async function getApplications(): Promise<Application[]> {
   return readCollection(APPLICATIONS_KEY, MOCK_APPLICATIONS);
 }
 
+export async function applyToJob(jobId: string): Promise<Application | null> {
+  const user = await getCurrentUser();
+  if (!user) return null;
+  
+  const applications = await getApplications();
+  const existing = applications.find(a => a.jobId === jobId && a.studentId === user.id);
+  if (existing) {
+    throw new Error("You have already applied for this job.");
+  }
+  
+  const profile = await getProfile();
+  const jobs = await getJobs();
+  const job = jobs.find(j => j.id === jobId);
+  if (!job) throw new Error("Job not found.");
+  
+  const matchResult = matchScore(profile, job);
+  
+  const newApp: Application = {
+    id: `app-${Date.now()}`,
+    jobId,
+    studentId: user.id,
+    appliedAt: new Date().toISOString(),
+    snapshot: {
+      profile,
+      matchScore: matchResult.score
+    }
+  };
+  
+  writeJson(APPLICATIONS_KEY, [...applications, newApp]);
+  return newApp;
+}
+
 export type ApplicantRow = {
   application: Application;
   student: Student;

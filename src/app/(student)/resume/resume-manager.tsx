@@ -389,7 +389,7 @@ export function ResumeManager() {
         </>
       ) : (
         <div className="mt-6 rounded-lg border border-line bg-surface p-4 sm:p-6">
-          <h2 className="text-base font-semibold">What you'll see after uploading</h2>
+          <h2 className="text-base font-semibold">What you&apos;ll see after uploading</h2>
           <div className="mt-4 grid gap-6 sm:grid-cols-2">
             <div>
               <h3 className="text-sm font-medium text-ink">Parsed details</h3>

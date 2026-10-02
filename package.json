@@ -6,22 +6,27 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "seed:demo": "tsx scripts/seed-demo.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.2",
+    "bcryptjs": "^3.0.3",
     "dotenv": "17.3.1",
     "drizzle-orm": "0.45.2",
+    "jose": "^6.2.12",
     "lucide-react": "^1.50.0",
     "mammoth": "^1.13.0",
     "next": "16.2.6",
     "pdf-parse": "^2.4.5",
     "pg": "8.20.0",
     "react": "19.2.6",
-    "react-dom": "19.2.6"
+    "react-dom": "19.2.6",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "4.1.17",
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "22.19.15",
     "@types/pg": "8.18.0",
     "@types/react": "19.2.14",

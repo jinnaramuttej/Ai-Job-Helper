@@ -289,16 +289,6 @@ export const MOCK_JOBS: Job[] = [
 
 export const MOCK_STUDENTS: Student[] = [
   {
-    id: "ananya-sharma",
-    name: "Ananya Sharma",
-    email: "ananya.sharma@college.edu",
-    branch: "Computer science",
-    year: "3rd year",
-    preferredLocation: "Bengaluru",
-    skills: ["JavaScript", "React", "SQL"],
-    preferredRoles: ["Frontend developer"],
-  },
-  {
     id: "rahul-verma",
     name: "Rahul Verma",
     email: "rahul.verma@college.edu",
@@ -371,13 +361,11 @@ export const MOCK_STUDENTS: Student[] = [
 ];
 
 export const MOCK_APPLICATIONS: Application[] = [
-  { id: "app-1", jobId: "frontend-developer-intern-pixelworks", studentId: "ananya-sharma", appliedAt: "2026-03-02T09:15:00.000Z" },
   { id: "app-2", jobId: "frontend-developer-intern-pixelworks", studentId: "sara-iqbal", appliedAt: "2026-03-03T14:40:00.000Z" },
   { id: "app-3", jobId: "frontend-developer-intern-pixelworks", studentId: "dev-patel", appliedAt: "2026-03-05T11:05:00.000Z" },
   { id: "app-4", jobId: "backend-developer-intern-databridge", studentId: "rahul-verma", appliedAt: "2026-03-01T16:20:00.000Z" },
   { id: "app-5", jobId: "backend-developer-intern-databridge", studentId: "kavitha-reddy", appliedAt: "2026-03-04T10:30:00.000Z" },
   { id: "app-6", jobId: "data-analyst-intern-insightgrid", studentId: "meera-krishnan", appliedAt: "2026-03-02T13:45:00.000Z" },
-  { id: "app-7", jobId: "data-analyst-intern-insightgrid", studentId: "ananya-sharma", appliedAt: "2026-03-06T09:10:00.000Z" },
   { id: "app-8", jobId: "ml-intern-neuraledge", studentId: "arjun-nair", appliedAt: "2026-03-03T18:25:00.000Z" },
   { id: "app-9", jobId: "devops-intern-cloudsprint", studentId: "ilyas-khan", appliedAt: "2026-03-07T08:55:00.000Z" },
   { id: "app-10", jobId: "fullstack-developer-novalabs", studentId: "kavitha-reddy", appliedAt: "2026-03-05T15:35:00.000Z" },
@@ -387,7 +375,4 @@ export const MOCK_APPLICATIONS: Application[] = [
   { id: "app-14", jobId: "data-analyst-clearmetrics", studentId: "meera-krishnan", appliedAt: "2026-03-05T09:30:00.000Z" },
   { id: "app-15", jobId: "ui-designer-intern-craftly", studentId: "sara-iqbal", appliedAt: "2026-03-06T14:20:00.000Z" },
   { id: "app-16", jobId: "ml-intern-visionai", studentId: "arjun-nair", appliedAt: "2026-03-07T19:40:00.000Z" },
-  { id: "app-demo-1", jobId: "frontend-developer-intern-pixelworks", studentId: "demo-user", appliedAt: "2026-03-08T10:00:00.000Z" },
-  { id: "app-demo-2", jobId: "fullstack-intern-campuskart", studentId: "demo-user", appliedAt: "2026-03-09T11:00:00.000Z" },
-  { id: "app-demo-3", jobId: "ui-designer-intern-craftly", studentId: "demo-user", appliedAt: "2026-03-10T12:00:00.000Z" },
 ];

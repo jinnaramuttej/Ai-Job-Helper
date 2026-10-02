@@ -1,51 +1,53 @@
-import test from "node:test";
-import assert from "node:assert/strict";
+import { describe, it, expect } from "vitest";
 import { normalize, displayName, SKILL_TABLE } from "./skills";
 
-test("normalize maps aliases to canonical names", () => {
-  assert.deepEqual(normalize("js, react.js, NodeJS, Postgres"), [
-    "javascript",
-    "react",
-    "node.js",
-    "postgresql",
-  ]);
+describe("normalize", () => {
+  it("maps aliases to canonical names", () => {
+    expect(normalize("js, react.js, NodeJS, Postgres")).toEqual([
+      "javascript",
+      "react",
+      "node.js",
+      "postgresql",
+    ]);
+  });
+
+  it("handles multi-word aliases, punctuation, and dedupes", () => {
+    expect(normalize(" Java Script ; reactjs \n React , cpp , C++")).toEqual([
+      "javascript",
+      "react",
+      "c++",
+    ]);
+  });
+
+  it("keeps unknown skills as cleaned text", () => {
+    expect(normalize("Rust, Crystal Lang,   GO")).toEqual([
+      "rust",
+      "crystal lang",
+      "go",
+    ]);
+  });
 });
 
-test("normalize handles multi-word aliases, punctuation, and dedupes", () => {
-  assert.deepEqual(normalize(" Java Script ; reactjs \n React , cpp , C++"), [
-    "javascript",
-    "react",
-    "c++",
-  ]);
-});
-
-test("normalize keeps unknown skills as cleaned text", () => {
-  assert.deepEqual(normalize("Rust, Crystal Lang,   GO"), [
-    "rust",
-    "crystal lang",
-    "go",
-  ]);
-});
-
-test("every alias maps to exactly one canonical skill", () => {
-  const seen = new Map<string, string>();
-  for (const entry of SKILL_TABLE) {
-    const variants = [entry.name, ...entry.aliases].map((v) =>
-      v.trim().toLowerCase().replace(/\s+/g, " "),
-    );
-    for (const variant of variants) {
-      const previous = seen.get(variant);
-      assert.ok(
-        !previous || previous === entry.name,
-        `"${variant}" is claimed by both "${previous}" and "${entry.name}"`,
+describe("SKILL_TABLE", () => {
+  it("every alias maps to exactly one canonical skill", () => {
+    const seen = new Map<string, string>();
+    for (const entry of SKILL_TABLE) {
+      const variants = [entry.name, ...entry.aliases].map((v) =>
+        v.trim().toLowerCase().replace(/\s+/g, " "),
       );
-      seen.set(variant, entry.name);
+      for (const variant of variants) {
+        const previous = seen.get(variant);
+        expect(!previous || previous === entry.name).toBe(true);
+        seen.set(variant, entry.name);
+      }
     }
-  }
+  });
 });
 
-test("displayName returns the display casing for canonical skills", () => {
-  assert.equal(displayName("javascript"), "JavaScript");
-  assert.equal(displayName("node.js"), "Node.js");
-  assert.equal(displayName("unknown thing"), "unknown thing");
+describe("displayName", () => {
+  it("returns the display casing for canonical skills", () => {
+    expect(displayName("javascript")).toBe("JavaScript");
+    expect(displayName("node.js")).toBe("Node.js");
+    expect(displayName("unknown thing")).toBe("unknown thing");
+  });
 });

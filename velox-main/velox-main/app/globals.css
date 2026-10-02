@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  :root {
+    --font-sans: "Geist", sans-serif;
+    --font-mono: "Geist Mono", monospace;
+  }
+
+  html {
+    background-color: #080808;
+    color: #ededed;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background: #ededed;
+    color: #080808;
+  }
+}

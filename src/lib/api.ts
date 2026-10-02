@@ -145,11 +145,12 @@ function toResume(
 /* Session helpers -------------------------------------------------------- */
 
 async function getSessionUserId(): Promise<string | null> {
-  const { data } = await getSupabaseClient().auth.getUser();
-  return data.user?.id ?? null;
+  const user = await getCurrentUser();
+  return user?.id ?? null;
 }
 
 async function getProfileRow(id: string): Promise<ProfileRow | null> {
+  if (!isSupabaseConfigured()) return null;
   const { data } = await getSupabaseClient()
     .from("profiles")
     .select("*")
@@ -165,46 +166,53 @@ export async function studentSignUp(
   password: string,
   name: string,
 ): Promise<CurrentUser | null> {
-  if (!isSupabaseConfigured()) return local.getCurrentUser();
-  const { data, error } = await getSupabaseClient().auth.signUp({
-    email,
-    password,
-    options: { data: { name, role: "student" } },
+  const res = await fetch('/api/auth/signup', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password, name })
   });
-  if (error || !data.user) return null;
-  return { id: data.user.id, name, email };
+  if (!res.ok) throw new Error('Signup failed');
+  return getCurrentUser();
 }
 
 export async function studentSignIn(
   email: string,
   password: string,
 ): Promise<CurrentUser | null> {
-  if (!isSupabaseConfigured()) return local.getCurrentUser();
-  const { data, error } = await getSupabaseClient().auth.signInWithPassword({
-    email,
-    password,
+  const res = await fetch('/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
   });
-  if (error || !data.user) return null;
-  const profile = await getProfileRow(data.user.id);
-  return {
-    id: data.user.id,
-    name: profile?.name ?? "",
-    email: profile?.email ?? data.user.email ?? "",
-  };
+  if (!res.ok) throw new Error('Login failed');
+  return getCurrentUser();
 }
 
 export async function signOut(): Promise<void> {
-  if (!isSupabaseConfigured()) return;
-  await getSupabaseClient().auth.signOut();
+  if (typeof window !== "undefined") {
+    await fetch('/api/auth/logout', { method: 'POST' });
+  }
 }
 
 export async function getCurrentUser(): Promise<CurrentUser | null> {
-  if (!isSupabaseConfigured()) return local.getCurrentUser();
-  const userId = await getSessionUserId();
-  if (!userId) return null;
-  const profile = await getProfileRow(userId);
-  if (!profile) return null;
-  return { id: userId, name: profile.name, email: profile.email };
+  if (typeof window === "undefined") {
+    const { getSession } = await import('@/lib/auth/session');
+    const { store } = await import('@/lib/auth/store');
+    const session = await getSession();
+    if (!session) return null;
+    const user = await store.findById(session.sub);
+    if (!user) return null;
+    return { id: user.id, name: user.name, email: user.email };
+  } else {
+    try {
+      const res = await fetch('/api/auth/me');
+      if (!res.ok) return null;
+      const data = await res.json();
+      return data;
+    } catch {
+      return null;
+    }
+  }
 }
 
 /* Profile ---------------------------------------------------------------- */
@@ -301,12 +309,39 @@ export async function getApplications(): Promise<Application[]> {
 
 /** Creates an application for the signed-in student (unique per job). */
 export async function applyToJob(jobId: string): Promise<Application | null> {
-  if (!isSupabaseConfigured()) return null;
+  if (!isSupabaseConfigured()) return local.applyToJob(jobId);
   const userId = await getSessionUserId();
   if (!userId) return null;
+  
+  // Reject duplicates
+  const existing = await getSupabaseClient()
+    .from("applications")
+    .select("id")
+    .eq("job_id", jobId)
+    .eq("student_id", userId)
+    .single();
+    
+  if (existing.data) {
+    throw new Error("You have already applied for this job.");
+  }
+
+  // Generate snapshot
+  const profile = await getProfile();
+  const jobs = await getJobs();
+  const job = jobs.find(j => j.id === jobId);
+  if (!job) throw new Error("Job not found.");
+  
+  const matchResult = matchScore(profile, job);
+  const snapshot = { profile, matchScore: matchResult.score };
+
   const { data, error } = await getSupabaseClient()
     .from("applications")
-    .insert({ job_id: jobId, student_id: userId })
+    .insert({ 
+      job_id: jobId, 
+      student_id: userId,
+      // @ts-ignore - snapshot type might not be updated in DB schema
+      snapshot: snapshot
+    })
     .select()
     .single();
   if (error || !data) return null;
@@ -383,35 +418,41 @@ export async function adminLogin(
   email: string,
   password: string,
 ): Promise<AdminUser | null> {
-  if (!isSupabaseConfigured()) return local.adminLogin(email, password);
-  const supabase = getSupabaseClient();
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: email.trim(),
-    password,
+  const res = await fetch('/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
   });
-  if (error || !data.user) return null;
-
-  const profile = await getProfileRow(data.user.id);
-  if (!profile || profile.role !== "admin") {
-    // Not an admin account — do not leave a session behind.
-    await supabase.auth.signOut();
-    return null;
-  }
-  return { name: profile.name || "Admin", email: profile.email };
+  if (!res.ok) return null;
+  return getAdminUser();
 }
 
 export async function getAdminUser(): Promise<AdminUser | null> {
-  if (!isSupabaseConfigured()) return local.getAdminUser();
-  const userId = await getSessionUserId();
-  if (!userId) return null;
-  const profile = await getProfileRow(userId);
-  if (!profile || profile.role !== "admin") return null;
-  return { name: profile.name || "Admin", email: profile.email };
+  if (typeof window === "undefined") {
+    const { getSession } = await import('@/lib/auth/session');
+    const { store } = await import('@/lib/auth/store');
+    const session = await getSession();
+    if (!session || session.role !== 'admin') return null;
+    const user = await store.findById(session.sub);
+    if (!user) return null;
+    return { name: user.name, email: user.email };
+  } else {
+    try {
+      const res = await fetch('/api/auth/me');
+      if (!res.ok) return null;
+      const data = await res.json();
+      if (data.role !== 'admin') return null;
+      return { name: data.name, email: data.email };
+    } catch {
+      return null;
+    }
+  }
 }
 
 export async function adminLogout(): Promise<void> {
-  if (!isSupabaseConfigured()) return local.adminLogout();
-  await getSupabaseClient().auth.signOut();
+  if (typeof window !== "undefined") {
+    await fetch('/api/auth/logout', { method: 'POST' });
+  }
 }
 
 /* Admin dashboard and job CRUD ------------------------------------------- */

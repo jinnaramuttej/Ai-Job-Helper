@@ -110,20 +110,33 @@ export function matchScore(
       ? MATCH_WEIGHTS.experience
       : 0;
 
-  const score = Math.max(
-    0,
-    Math.min(
-      100,
-      Math.round(skillsPoints + rolePoints + locationPoints + experiencePoints),
-    ),
-  );
+  const totalExact = skillsPoints + rolePoints + locationPoints + experiencePoints;
+  const score = Math.max(0, Math.min(100, Math.round(totalExact)));
+
+  // Round components using the Largest Remainder Method so they sum exactly to 'score'
+  const parts = [
+    { key: "skills", exact: skillsPoints, rounded: Math.floor(skillsPoints) },
+    { key: "role", exact: rolePoints, rounded: Math.floor(rolePoints) },
+    { key: "location", exact: locationPoints, rounded: Math.floor(locationPoints) },
+    { key: "experience", exact: experiencePoints, rounded: Math.floor(experiencePoints) }
+  ];
+
+  let currentSum = parts.reduce((sum, p) => sum + p.rounded, 0);
+  const diff = score - currentSum;
+
+  parts.sort((a, b) => (b.exact - b.rounded) - (a.exact - a.rounded));
+  for (let i = 0; i < diff && i < parts.length; i++) {
+    parts[i].rounded += 1;
+  }
+
+  const finalParts = Object.fromEntries(parts.map(p => [p.key, p.rounded]));
 
   return {
     score,
-    skillsPoints,
-    rolePoints,
-    locationPoints,
-    experiencePoints,
+    skillsPoints: finalParts.skills,
+    rolePoints: finalParts.role,
+    locationPoints: finalParts.location,
+    experiencePoints: finalParts.experience,
     matchedSkills,
     missingSkills,
   };

@@ -5,11 +5,56 @@ import type { Profile } from "./mock";
 
 export type SortOption = "best_match" | "newest" | "company_az";
 
-function matchesSearch(job: Job, query: string): boolean {
-  if (!query) return true;
-  const q = query.toLowerCase().replace(/[^\w\s]/g, "");
+export type SearchParamsState = {
+  q: string;
+  role: string;
+  location: string;
+  experience: string;
+  sort: SortOption | "";
+  page: number;
+};
+
+export function parseSearchParams(params: URLSearchParams): SearchParamsState {
+  const sortRaw = params.get("sort");
+  const sort: SortOption | "" = ["best_match", "newest", "company_az"].includes(sortRaw as string) 
+    ? (sortRaw as SortOption) 
+    : "";
   
-  // Basic text match on title or company
+  const pageRaw = parseInt(params.get("page") || "1", 10);
+  const page = isNaN(pageRaw) || pageRaw < 1 ? 1 : pageRaw;
+
+  return {
+    q: params.get("q") || "",
+    role: params.get("role") || "",
+    location: params.get("location") || "",
+    experience: params.get("experience") || "",
+    sort,
+    page
+  };
+}
+
+export function serializeSearchParams(state: SearchParamsState): URLSearchParams {
+  const params = new URLSearchParams();
+  if (state.q) params.set("q", state.q);
+  if (state.role) params.set("role", state.role);
+  if (state.location) params.set("location", state.location);
+  if (state.experience) params.set("experience", state.experience);
+  if (state.sort) params.set("sort", state.sort);
+  if (state.page > 1) params.set("page", state.page.toString());
+  return params;
+}
+
+function matchesSearch(job: Job, state: SearchParamsState): boolean {
+  if (state.role && !job.role.toLowerCase().includes(state.role.toLowerCase())) return false;
+  if (state.location && !job.location.toLowerCase().includes(state.location.toLowerCase())) return false;
+  if (state.experience) {
+    const exp = parseInt(state.experience, 10);
+    if (!isNaN(exp) && job.minExperienceYears > exp) return false;
+  }
+
+  if (!state.q) return true;
+  const q = state.q.toLowerCase().replace(/[^\w\s]/g, "");
+  
   if (
     job.title.toLowerCase().replace(/[^\w\s]/g, "").includes(q) ||
     job.company.toLowerCase().replace(/[^\w\s]/g, "").includes(q)
@@ -17,8 +62,7 @@ function matchesSearch(job: Job, query: string): boolean {
     return true;
   }
   
-  // Alias match: Check if query matches any alias, if so check if job requires that canonical skill
-  const canonicalQuerySkills = normalize(query);
+  const canonicalQuerySkills = normalize(state.q);
   for (const querySkill of canonicalQuerySkills) {
     for (const reqSkill of job.requiredSkills) {
       if (normalize(reqSkill).includes(querySkill)) {
@@ -33,13 +77,11 @@ function matchesSearch(job: Job, query: string): boolean {
 export function searchJobs(
   jobs: Job[],
   profile: Profile | null,
-  query: string,
-  sortBy: SortOption,
-  page: number,
+  state: SearchParamsState,
   perPage: number = 10
 ): { items: (Job & { match?: MatchResult })[]; total: number; totalPages: number } {
   // 1. Filter
-  let filtered = jobs.filter(job => matchesSearch(job, query));
+  let filtered = jobs.filter(job => matchesSearch(job, state));
   
   // 2. Compute match scores if profile exists
   let scored = filtered.map(job => ({
@@ -48,8 +90,8 @@ export function searchJobs(
   }));
 
   // Default sort handling
-  let activeSort = sortBy;
-  if (!sortBy) {
+  let activeSort = state.sort;
+  if (!activeSort) {
     activeSort = profile && profile.skills.length > 0 ? "best_match" : "newest";
   }
 
@@ -75,6 +117,7 @@ export function searchJobs(
   // 4. Paginate
   const total = scored.length;
   const totalPages = Math.ceil(total / perPage);
+  const page = state.page;
   const items = scored.slice((page - 1) * perPage, page * perPage);
 
   return { items, total, totalPages };

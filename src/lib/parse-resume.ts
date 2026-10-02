@@ -114,6 +114,19 @@ export function extractSkills(text: string): string[] {
   return found;
 }
 
+function formatName(name: string): string {
+  if (name === name.toUpperCase() || name === name.toLowerCase()) {
+    return name.split(/\s+/).map((word, index) => {
+      const lowerWord = word.toLowerCase();
+      if (index > 0 && /^(de|van|von|der|da|di|la)$/.test(lowerWord)) {
+        return lowerWord;
+      }
+      return lowerWord.charAt(0).toUpperCase() + lowerWord.slice(1);
+    }).join(" ");
+  }
+  return name;
+}
+
 export function parseResumeText(text: string): ParsedResumeFields {
   const normalizedText = text.replace(/\r\n?/g, "\n");
   const lines = normalizedText.split("\n").map(cleanLine);
@@ -127,7 +140,7 @@ export function parseResumeText(text: string): ParsedResumeFields {
   for (const line of lines) {
     if (line.length > 0 && !emailRegex.test(line) && !headingRegex.test(line)) {
       // Just taking the first line for name as requested
-      nameValue = line.slice(0, 50);
+      nameValue = formatName(line.slice(0, 50));
       nameConfidence = "guessed";
       break;
     }
@@ -156,10 +169,10 @@ export function parseResumeText(text: string): ParsedResumeFields {
     yearConfidence = "guessed";
   }
 
-  const collegeRegex = /[^\n]*(University|Institute|College)[^\n]*/i;
-  const collegeMatch = normalizedText.match(collegeRegex);
-  const collegeValue = collegeMatch ? collegeMatch[0].trim() : "";
-  const collegeConfidence: Confidence = collegeMatch ? "guessed" : "missing";
+  const collegeRegex = /\b(University|Institute|College)\b/i;
+  const collegeLine = lines.find(line => !emailRegex.test(line) && collegeRegex.test(line));
+  const collegeValue = collegeLine ? collegeLine : "";
+  const collegeConfidence: Confidence = collegeLine ? "guessed" : "missing";
 
   const foundSkills = extractSkills(normalizedText);
   const skillsConfidence: Confidence = foundSkills.length > 0 ? "found" : "missing";
