@@ -107,4 +107,5 @@ export class JsonFileUserStore implements UserStore {
   }
 }
 
-export const store = new JsonFileUserStore(path.join(process.cwd(), 'data', 'users.json'));
+const dataDir = process.env.VERCEL ? '/tmp' : path.join(process.cwd(), 'data');
+export const store = new JsonFileUserStore(path.join(dataDir, 'users.json'));
