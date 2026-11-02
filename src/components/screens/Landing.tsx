@@ -439,3 +439,4 @@ const faqList = [
     a: 'The index syncs continuously across top tech startup boards and direct company career pages.',
   },
 ];
+
