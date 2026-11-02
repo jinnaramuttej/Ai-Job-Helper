@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { applyToJob, saveJob, unsaveJob, getSavedJobs, getStudentApplications } from "./api-local";
-import { MOCK_JOBS } from "./mock";
+import { SEED_JOBS } from "./mock";
 
 describe("Apply and Save flows", () => {
   let store: Record<string, string> = {};
@@ -27,7 +27,7 @@ describe("Apply and Save flows", () => {
 
   describe("Save / Unsave", () => {
     it("is idempotent for save and unsave", async () => {
-      const jobId = MOCK_JOBS[0].id;
+      const jobId = SEED_JOBS[0].id;
       
       // Save multiple times
       await saveJob(jobId);
@@ -51,7 +51,7 @@ describe("Apply and Save flows", () => {
     it("stores a snapshot of profile and match score, and rejects duplicates", async () => {
       const apps = await getStudentApplications("demo-user");
       const appliedJobIds = new Set(apps.map(a => a.job?.id));
-      const jobId = MOCK_JOBS.find(j => !appliedJobIds.has(j.id))!.id;
+      const jobId = SEED_JOBS.find(j => !appliedJobIds.has(j.id))!.id;
 
       // First apply should succeed
       const application = await applyToJob(jobId);

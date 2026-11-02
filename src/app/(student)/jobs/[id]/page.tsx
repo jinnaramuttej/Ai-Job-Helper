@@ -1,10 +1,6 @@
-import type { Metadata } from "next";
-import { JobDetail } from "./job-detail";
+import { redirect } from 'next/navigation';
 
-export const metadata: Metadata = {
-  title: "Job",
-};
-
-export default function JobDetailPage() {
-  return <JobDetail />;
+export default async function JobDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  redirect(`/jobs?job=${id}`);
 }

@@ -81,7 +81,7 @@ export type AdminUser = {
 
 /** Mock admin credentials — replaced by real auth in a later phase. */
 export const ADMIN_CREDENTIALS = {
-  email: "admin@aijobfinder.com",
+  email: "admin@jaggle.work",
   password: "admin123",
 };
 
@@ -100,7 +100,7 @@ export const ROLE_OPTIONS = [
 
 export const DEFAULT_PROFILE: Profile = {
   name: "Demo User",
-  email: "demo@aijobfinder.com",
+  email: "demo@jaggle.work",
   branch: "Computer science",
   year: "",
   preferredLocation: "Remote",
@@ -109,11 +109,11 @@ export const DEFAULT_PROFILE: Profile = {
 };
 
 /**
- * The mock "uploaded" resume, as plain text. Deliberately covers a
+ * The sample "uploaded" resume, as plain text. Deliberately covers a
  * moderate set of keywords and is missing a Projects section so the ATS
  * feedback has something useful to say.
  */
-export const MOCK_RESUME_TEXT = `ANANYA SHARMA
+export const SAMPLE_RESUME_TEXT = `ANANYA SHARMA
 ananya.sharma@college.edu | +91 98765 43210
 
 Education
@@ -133,7 +133,7 @@ Coursework
 Databases, operating systems, computer networks, software engineering
 `;
 
-export const MOCK_PARSED_RESUME: ParsedResume = {
+export const SAMPLE_PARSED_RESUME: ParsedResume = {
   name: "Ananya Sharma",
   degree: "B.Tech in Computer Science",
   college: "National Institute of Technology, Trichy",
@@ -141,7 +141,7 @@ export const MOCK_PARSED_RESUME: ParsedResume = {
   skills: ["JavaScript", "Python", "React", "HTML", "CSS", "SQL"],
 };
 
-export const MOCK_JOBS: Job[] = [
+export const SEED_JOBS: Job[] = [
   {
     id: "frontend-developer-intern-pixelworks",
     title: "Frontend developer intern",
@@ -287,7 +287,7 @@ export const MOCK_JOBS: Job[] = [
   },
 ];
 
-export const MOCK_STUDENTS: Student[] = [
+export const SEED_STUDENTS: Student[] = [
   {
     id: "rahul-verma",
     name: "Rahul Verma",
@@ -360,7 +360,7 @@ export const MOCK_STUDENTS: Student[] = [
   },
 ];
 
-export const MOCK_APPLICATIONS: Application[] = [
+export const SEED_APPLICATIONS: Application[] = [
   { id: "app-2", jobId: "frontend-developer-intern-pixelworks", studentId: "sara-iqbal", appliedAt: "2026-03-03T14:40:00.000Z" },
   { id: "app-3", jobId: "frontend-developer-intern-pixelworks", studentId: "dev-patel", appliedAt: "2026-03-05T11:05:00.000Z" },
   { id: "app-4", jobId: "backend-developer-intern-databridge", studentId: "rahul-verma", appliedAt: "2026-03-01T16:20:00.000Z" },

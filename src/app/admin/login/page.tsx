@@ -43,7 +43,7 @@ export default function AdminLoginPage() {
   return (
     <div className="mx-auto w-full max-w-sm pt-8">
       <p className="text-center text-[15px] font-semibold tracking-tight">
-        AI Job Finder
+        Jaggle
       </p>
       <p className="mt-1 text-center text-sm text-muted">Admin</p>
 

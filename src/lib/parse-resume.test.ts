@@ -1,10 +1,10 @@
 import { describe, it, expect } from "vitest";
 import { extractSkills, parseResumeText } from "./parse-resume";
-import { MOCK_RESUME_TEXT } from "./mock";
+import { SAMPLE_RESUME_TEXT } from "./mock";
 
 describe("parseResumeText", () => {
   it("parses name, degree, college, and graduation year from resume text", () => {
-    const parsed = parseResumeText(MOCK_RESUME_TEXT);
+    const parsed = parseResumeText(SAMPLE_RESUME_TEXT);
     expect(parsed.name.value).toBe("Ananya Sharma");
     expect(parsed.degree.value).toMatch(/B\.Tech in Computer Science/i);
     expect(parsed.college.value).toMatch(/National Institute of Technology/i);

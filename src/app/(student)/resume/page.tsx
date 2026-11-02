@@ -1,18 +1,15 @@
-import type { Metadata } from "next";
-import { ResumeManager } from "./resume-manager";
+import type { Metadata } from 'next';
+import { Suspense } from 'react';
+import { ResumeClient } from './resume-client';
 
 export const metadata: Metadata = {
-  title: "Resume",
+  title: 'Resume Studio',
 };
 
 export default function ResumePage() {
   return (
-    <section>
-      <h1 className="text-2xl font-semibold tracking-tight">Resume</h1>
-      <p className="mt-2 text-[15px] text-muted">
-        Upload your resume to see how it scores with ATS checkers.
-      </p>
-      <ResumeManager />
-    </section>
+    <Suspense fallback={<div className="p-8 text-muted">Loading Resume Studio...</div>}>
+      <ResumeClient />
+    </Suspense>
   );
 }

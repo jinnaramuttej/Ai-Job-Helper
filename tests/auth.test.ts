@@ -45,14 +45,14 @@ describe('Auth Tests', () => {
 
   describe('Session Token', () => {
     it('should sign and verify valid token', async () => {
-      const payload = { sub: '123', role: 'student', name: 'Test' };
+      const payload = { sub: '123', role: 'student', name: 'Test', email: 'test@example.com' };
       const token = await createSessionToken(payload);
       const decoded = await verifySessionToken(token);
       expect(decoded).toMatchObject(payload);
     });
 
     it('should reject tampered token', async () => {
-      const payload = { sub: '123', role: 'student', name: 'Test' };
+      const payload = { sub: '123', role: 'student', name: 'Test', email: 'test@example.com' };
       const token = await createSessionToken(payload);
       const tampered = token.slice(0, -5) + 'xxxxx';
       expect(await verifySessionToken(tampered)).toBeNull();
@@ -60,7 +60,7 @@ describe('Auth Tests', () => {
 
     it('should reject expired token', async () => {
       vi.useFakeTimers();
-      const payload = { sub: '123', role: 'student', name: 'Test' };
+      const payload = { sub: '123', role: 'student', name: 'Test', email: 'test@example.com' };
       const token = await createSessionToken(payload);
       vi.advanceTimersByTime(8 * 24 * 60 * 60 * 1000);
       expect(await verifySessionToken(token)).toBeNull();

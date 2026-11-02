@@ -68,7 +68,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
             href="/admin"
             className="rounded-md py-1 text-[15px] font-semibold tracking-tight text-ink transition-colors duration-150 hover:text-accent"
           >
-            AI Job Finder <span className="font-normal text-muted">Admin</span>
+            Jaggle <span className="font-normal text-muted">Admin</span>
           </Link>
           <div className="flex flex-wrap items-center gap-1">
             <nav aria-label="Admin navigation">

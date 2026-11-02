@@ -10,11 +10,11 @@
 import {
   ADMIN_CREDENTIALS,
   DEFAULT_PROFILE,
-  MOCK_APPLICATIONS,
-  MOCK_JOBS,
-  MOCK_PARSED_RESUME,
-  MOCK_RESUME_TEXT,
-  MOCK_STUDENTS,
+  SEED_APPLICATIONS,
+  SEED_JOBS,
+  SAMPLE_PARSED_RESUME,
+  SAMPLE_RESUME_TEXT,
+  SEED_STUDENTS,
   ROLE_OPTIONS,
   YEAR_OPTIONS,
 } from "./mock";
@@ -126,7 +126,7 @@ export async function saveProfile(profile: Profile): Promise<Profile> {
 /* Jobs ------------------------------------------------------------------- */
 
 export async function getJobs(): Promise<Job[]> {
-  return readCollection(JOBS_KEY, MOCK_JOBS);
+  return readCollection(JOBS_KEY, SEED_JOBS);
 }
 
 export async function getJob(id: string): Promise<Job | null> {
@@ -173,7 +173,7 @@ export async function unsaveJob(jobId: string): Promise<void> {
 /* Applications (admin reads; the student apply flow arrives next phase) --- */
 
 export async function getApplications(): Promise<Application[]> {
-  return readCollection(APPLICATIONS_KEY, MOCK_APPLICATIONS);
+  return readCollection(APPLICATIONS_KEY, SEED_APPLICATIONS);
 }
 
 export async function applyToJob(jobId: string, userId?: string): Promise<Application | null> {
@@ -233,7 +233,7 @@ export async function getJobApplicants(jobId: string): Promise<ApplicantRow[]> {
 /* Students (admin) ------------------------------------------------------- */
 
 export async function getStudents(): Promise<Student[]> {
-  return MOCK_STUDENTS.map((student) => ({
+  return SEED_STUDENTS.map((student) => ({
     ...student,
     skills: [...student.skills],
     preferredRoles: [...student.preferredRoles],
@@ -381,8 +381,8 @@ export async function parseResume(fileName: string): Promise<Resume> {
   await new Promise((resolve) => setTimeout(resolve, RESUME_PARSE_DELAY_MS));
   const resume: Resume = {
     file: { fileName, uploadedAt: new Date().toISOString() },
-    parsed: { ...MOCK_PARSED_RESUME, skills: [...MOCK_PARSED_RESUME.skills] },
-    text: MOCK_RESUME_TEXT,
+    parsed: { ...SAMPLE_PARSED_RESUME, skills: [...SAMPLE_PARSED_RESUME.skills] },
+    text: SAMPLE_RESUME_TEXT,
   };
   writeJson(RESUME_KEY, resume);
   return resume;

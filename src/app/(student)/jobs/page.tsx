@@ -1,81 +1,15 @@
-import type { Metadata } from "next";
-import { Suspense } from "react";
-import { RecommendedBlock } from "@/components/recommended";
-import { getCurrentUser, getStudentApplications, getProfile, getRecommendedJobs, getResume } from "@/lib/api";
-import { calculateCompleteness } from "@/lib/profile-utils";
-import { JobsClient } from "./jobs-client";
+import type { Metadata } from 'next';
+import { Suspense } from 'react';
+import { JobsClient } from './jobs-client';
 
 export const metadata: Metadata = {
-  title: "Jobs",
+  title: 'Jobs',
 };
 
-export default async function JobsPage() {
-  const user = await getCurrentUser();
-  let applicationsSent = 0;
-  let profileCompleteness = "0%";
-  let matchedJobsCount = 0;
-
-  if (user) {
-    const [applications, profile, recommended, resume] = await Promise.all([
-      getStudentApplications(user.id),
-      getProfile(),
-      getRecommendedJobs(100), // Get a decent number for the count
-      getResume(),
-    ]);
-    
-    applicationsSent = applications.length;
-    matchedJobsCount = recommended.filter(r => r.match.score >= 50).length;
-    profileCompleteness = `${calculateCompleteness(profile, !!resume)}%`;
-  }
-
-  // Calculate time-based greeting
-  const hour = new Date().getHours();
-  let greeting = "Good evening";
-  if (hour < 12) greeting = "Good morning";
-  else if (hour < 18) greeting = "Good afternoon";
-
-  const firstName = user?.name ? user.name.split(" ")[0] : "";
-
+export default function JobsPage() {
   return (
-    <section>
-      {/* Header section */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-semibold tracking-tight">
-          {user ? `${greeting}, ${firstName}` : "Jobs"}
-        </h1>
-        <p className="text-[15px] text-muted">
-          {user ? "Here's an overview of your job search." : "Discover and apply for your next role."}
-        </p>
-
-        {user && (
-          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <div className="rounded-[10px] border border-line bg-surface p-4">
-              <div className="text-[24px] font-semibold tracking-tight text-ink">
-                {applicationsSent}
-              </div>
-              <div className="mt-1 text-[13px] text-muted">Applications sent</div>
-            </div>
-            <div className="rounded-[10px] border border-line bg-surface p-4">
-              <div className="text-[24px] font-semibold tracking-tight text-ink">
-                {profileCompleteness}
-              </div>
-              <div className="mt-1 text-[13px] text-muted">Profile completeness</div>
-            </div>
-            <div className="rounded-[10px] border border-line bg-surface p-4">
-              <div className="text-[24px] font-semibold tracking-tight text-ink">
-                {matchedJobsCount}
-              </div>
-              <div className="mt-1 text-[13px] text-muted">Jobs matching your skills</div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      <RecommendedBlock />
-      <h2 className="mt-8 text-base font-semibold">All jobs</h2>
-      <Suspense fallback={<div className="mt-8 text-muted">Loading jobs...</div>}>
-        <JobsClient />
-      </Suspense>
-    </section>
+    <Suspense fallback={<div className="p-8 text-muted">Loading jobs...</div>}>
+      <JobsClient />
+    </Suspense>
   );
 }

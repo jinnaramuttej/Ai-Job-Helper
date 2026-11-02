@@ -1,0 +1,127 @@
+@import "tailwindcss";
+
+@theme {
+  --color-canvas: #F7F4ED;
+  --color-side: #F9F7F2;
+  --color-card: #FFFDFA;
+  --color-ink: #1B1916;
+  --color-muted: #6B665D;
+  --color-faint: #9A948A;
+  --color-line: #E8E3D9;
+  --color-btn: #14110F;
+  --color-terra: #D2562E;
+  --color-green: #0F9D6B;
+  --color-amber: #C2740F;
+  --color-blue: #3563E9;
+  --color-violet: #5B3FD6;
+  --color-soft: #EFEBE2;
+
+  --font-serif: "Newsreader", Georgia, "Times New Roman", serif;
+  --font-sans: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+
+  --shadow-card: 0 1px 0 rgba(30, 20, 0, 0.03), 0 8px 24px rgba(60, 40, 10, 0.05);
+  --shadow-pill: 0 1px 0 rgba(30, 20, 0, 0.04), 0 2px 8px rgba(60, 40, 10, 0.06);
+  --shadow-pop: 0 1px 0 rgba(30, 20, 0, 0.04), 0 18px 48px rgba(40, 25, 5, 0.16);
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background: rgba(210, 86, 46, 0.18);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-terra);
+    outline-offset: 2px;
+  }
+  button:not(:disabled),
+  [role="button"],
+  summary,
+  label[for] {
+    cursor: pointer;
+  }
+  input[type="range"],
+  input[type="checkbox"],
+  input[type="radio"] {
+    accent-color: var(--color-ink);
+  }
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-faint);
+  }
+}
+
+@layer components {
+  .micro {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--color-muted);
+  }
+  .card {
+    background: var(--color-card);
+    border: 1px solid var(--color-line);
+    border-radius: 16px;
+    box-shadow: var(--shadow-card);
+  }
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+  .scroll-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #ddd6c9 transparent;
+  }
+  .field {
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid var(--color-line);
+    background: #fff;
+    padding: 9px 12px;
+    font-size: 14px;
+    color: var(--color-ink);
+    transition: border-color 150ms, box-shadow 150ms;
+  }
+  .field:hover {
+    border-color: #d9d2c5;
+  }
+  .field:focus {
+    outline: none;
+    border-color: var(--color-ink);
+    box-shadow: 0 0 0 3px rgba(27, 25, 22, 0.08);
+  }
+  .dashed-box {
+    border: 1px dashed #d9d2c5;
+    border-radius: 12px;
+  }
+  .chart-mark:focus {
+    outline: none;
+  }
+  .chart-mark:focus-visible > .mark-hit {
+    stroke: var(--color-terra);
+    stroke-width: 1.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

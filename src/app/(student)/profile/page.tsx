@@ -1,18 +1,11 @@
-import type { Metadata } from "next";
-import { ProfileForm } from "./profile-form";
+import type { Metadata } from 'next';
+import { SettingsScreen } from '@/components/screens/Settings';
+import { previewUIData } from '@/lib/preview';
 
 export const metadata: Metadata = {
-  title: "Profile",
+  title: 'Profile and Settings',
 };
 
 export default function ProfilePage() {
-  return (
-    <section>
-      <h1 className="text-2xl font-semibold tracking-tight">Profile</h1>
-      <p className="mt-2 text-[15px] text-muted">
-        Tell us about yourself so we can match you with the right jobs.
-      </p>
-      <ProfileForm />
-    </section>
-  );
+  return <SettingsScreen data={previewUIData} state="ready" />;
 }

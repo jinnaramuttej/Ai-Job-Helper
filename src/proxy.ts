@@ -1,8 +1,25 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { verifySessionToken } from '@/lib/auth/session-utils';
+import { verifySessionToken } from '@/lib/auth/session';
 
-const studentRoutes = ['/jobs', '/recommended', '/saved', '/applications', '/resume', '/profile'];
+const studentRoutes = [
+  '/jobs',
+  '/recommended',
+  '/saved',
+  '/applications',
+  '/resume',
+  '/profile',
+  '/overview',
+  '/dashboard',
+  '/command',
+  '/skills',
+  '/interview',
+  '/insights',
+  '/calendar',
+  '/activity',
+  '/settings',
+  '/onboarding',
+];
 
 export default async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -33,10 +50,13 @@ export default async function proxy(req: NextRequest) {
     }
     
     // Protected admin routes
-    if (!session || session.role !== 'admin') {
+    if (!session) {
       const nextUrl = new URL('/admin/login', req.url);
       nextUrl.searchParams.set('next', pathname);
       return NextResponse.redirect(nextUrl);
+    }
+    if (session.role !== 'admin') {
+      return new NextResponse('Forbidden', { status: 403 });
     }
     return NextResponse.next();
   }

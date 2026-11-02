@@ -1,53 +1,157 @@
 @import "tailwindcss";
 
-/*
- * AI Job Finder — design tokens
- * Calm, readable, cream paper feel with one green accent.
- * No shadows, gradients, glassmorphism, or animations
- * (only 150ms color transitions on hover, applied per element).
- */
 @theme {
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
-    "Segoe UI", sans-serif;
+  --font-serif: var(--font-newsreader), "Newsreader", Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-geist-sans), "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: var(--font-geist-mono), "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
 
-  /* Colors */
-  --color-bg: #f7f3ea; /* page background */
-  --color-surface: #fffdf8; /* cards, inputs */
-  --color-ink: #1f2328; /* primary text */
-  --color-muted: #6b6558; /* secondary text */
-  --color-line: #e4ddcc; /* 1px borders */
-  --color-accent: #2f5d50; /* buttons, links, active states */
-  --color-accent-strong: #295147; /* darker step of accent (primary button hover) */
-  --color-accent-soft: #e5ede6; /* selected / hover backgrounds */
-  --color-danger: #a63d2f; /* destructive actions, errors */
+  /* Theme tokens from reference-ui */
+  --color-canvas: #F7F4ED;
+  --color-side: #F9F7F2;
+  --color-card: #FFFDFA;
+  --color-ink: #1B1916;
+  --color-muted: #6B665D;
+  --color-faint: #9A948A;
+  --color-line: #E8E3D9;
+  --color-btn: #14110F;
+  --color-terra: #D2562E;
+  --color-green: #0F9D6B;
+  --color-amber: #C2740F;
+  --color-blue: #3563E9;
+  --color-violet: #5B3FD6;
+  --color-soft: #EFEBE2;
 
-  /* Radii: 8px inputs & buttons, 10px cards */
+  --color-border-subtle: #D6CEC0;
+  --color-low-grey: #CFC8BB;
+  --color-warm-bg: #FBF9F4;
+  --color-alt-bg: #F9F6F0;
+  --color-btn-hover: #2B2621;
+  --color-terra-hover: #B94A26;
+  --color-mint: #7FD6B4;
+  --color-heat-1: #F3D3C6;
+  --color-heat-2: #E9A68F;
+  --color-heat-3: #DD7A59;
+
+  --color-bg: #F7F4ED;
+  --color-surface: #FFFDFA;
+  --color-accent: #0F9D6B;
+  --color-accent-strong: #0B7A53;
+  --color-accent-soft: #EFEBE2;
+  --color-danger: #D2562E;
+
+  /* Shadows */
+  --shadow-card: 0 1px 0 rgba(30, 20, 0, 0.03), 0 8px 24px rgba(60, 40, 10, 0.05);
+  --shadow-pill: 0 1px 0 rgba(30, 20, 0, 0.04), 0 2px 8px rgba(60, 40, 10, 0.06);
+  --shadow-pop: 0 1px 0 rgba(30, 20, 0, 0.04), 0 18px 48px rgba(40, 25, 5, 0.16);
+
+  /* Radii */
   --radius-md: 0.5rem;
   --radius-lg: 0.625rem;
 }
 
 @layer base {
-  html {
-    /* Body copy targets 14–15px */
-    font-size: 14px;
+  html,
+  body {
+    height: 100%;
   }
 
   body {
-    background-color: var(--color-bg);
+    background-color: var(--color-canvas);
     color: var(--color-ink);
+    font-family: var(--font-sans);
     line-height: 1.55;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Visible keyboard focus on every control */
   :focus-visible {
-    outline: 2px solid var(--color-accent);
+    outline: 2px solid var(--color-terra);
     outline-offset: 2px;
-    border-radius: var(--radius-md);
   }
 
   ::selection {
-    background-color: var(--color-accent-soft);
+    background-color: rgba(210, 86, 46, 0.18);
+  }
+
+  button:not(:disabled),
+  [role="button"],
+  summary,
+  label[for] {
+    cursor: pointer;
+  }
+
+  input[type="range"],
+  input[type="checkbox"],
+  input[type="radio"] {
+    accent-color: var(--color-ink);
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-faint);
+  }
+}
+
+@layer components {
+  .micro {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--color-muted);
+  }
+  .card {
+    background: var(--color-card);
+    border: 1px solid var(--color-line);
+    border-radius: 16px;
+    box-shadow: var(--shadow-card);
+  }
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+  .scroll-thin {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-line) transparent;
+  }
+  .field {
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid var(--color-line);
+    background: #ffffff;
+    padding: 9px 12px;
+    font-size: 14px;
+    color: var(--color-ink);
+    transition: border-color 150ms, box-shadow 150ms;
+  }
+  .field:hover {
+    border-color: var(--color-border-subtle);
+  }
+  .field:focus {
+    outline: none;
+    border-color: var(--color-ink);
+    box-shadow: 0 0 0 3px rgba(27, 25, 22, 0.08);
+  }
+  .dashed-box {
+    border: 1px dashed var(--color-border-subtle);
+    border-radius: 12px;
+  }
+  .chart-mark:focus {
+    outline: none;
+  }
+  .chart-mark:focus-visible > .mark-hit {
+    stroke: var(--color-terra);
+    stroke-width: 1.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
   }
 }
