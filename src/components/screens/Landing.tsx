@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -11,7 +11,6 @@ import {
   FileText,
   Layers,
   MessagesSquare,
-  ShieldCheck,
   Sparkles,
   SquareKanban,
   Target,
@@ -19,7 +18,7 @@ import {
   Upload,
   Zap,
 } from 'lucide-react';
-import type { Job, UIData } from '@/lib/view-models';
+import type { UIData } from '@/lib/view-models';
 import { Button, Micro, cx } from '../ui';
 
 export interface LandingScreenProps {
@@ -32,7 +31,6 @@ export function LandingScreen({ data, state = 'ready', onNavigate }: LandingScre
   const router = useRouter();
   const navigate = onNavigate ?? ((screen) => router.push(screen.startsWith('/') ? screen : `/${screen}`));
   const [faq, setFaq] = useState<number | null>(0);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   const go = (id: string) => {
     const el = document.getElementById(id);
@@ -41,60 +39,26 @@ export function LandingScreen({ data, state = 'ready', onNavigate }: LandingScre
     }
   };
 
-  // Safe scroll reveal: items are fully visible by default, adding smooth reveal enhancement
-  useEffect(() => {
-    const elements = document.querySelectorAll('.reveal-on-scroll');
-    if (!('IntersectionObserver' in window)) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-revealed');
-          }
-        });
-      },
-      { threshold: 0.08 }
-    );
-
-    elements.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
-
   const sampleJob = data.jobs[0] ?? {
     id: 'sample',
     title: 'Frontend Engineer',
     company: 'Linear',
     city: 'Remote',
-    mode: 'Full-time',
     score: 92,
-    postedHours: 12,
     marks: { skills: 65, role: 14, location: 9, experience: 4 },
-    skills: [
-      { name: 'React', have: true, marks: 18 },
-      { name: 'TypeScript', have: true, marks: 16 },
-      { name: 'Next.js', have: true, marks: 15 },
-      { name: 'Node.js', have: false, marks: 9 },
-    ],
-    why: {
-      skills: 'Matches 3 of 4 core skills',
-      role: 'Direct match for Frontend Engineer',
-      location: 'Remote position matches preference',
-      experience: '0-2 years required',
-    },
   };
 
   return (
-    <div ref={containerRef} className="min-h-screen bg-ink text-white">
-      {/* Top Navbar */}
-      <header className="sticky top-0 z-50 border-b border-white/10 bg-ink/85 backdrop-blur-md">
+    <div className="min-h-screen bg-canvas font-sans text-ink">
+      {/* Top Navbar in Signature Canvas Theme */}
+      <header className="sticky top-0 z-50 border-b border-line bg-canvas/90 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-[1180px] items-center gap-6 px-4 md:px-8">
           <Link href="/" className="group flex items-baseline gap-2">
-            <span className="font-serif text-[24px] tracking-tight text-white transition-colors group-hover:text-terra">
+            <span className="font-serif text-[24px] tracking-tight text-ink transition-colors group-hover:text-terra">
               Jaggle
             </span>
           </Link>
-          <nav aria-label="Landing" className="hidden flex-1 items-center gap-6 text-[14px] text-white/75 md:flex">
+          <nav aria-label="Landing" className="hidden flex-1 items-center gap-6 text-[14px] text-muted md:flex">
             {[
               ['how', 'How it works'],
               ['features', 'Features'],
@@ -105,18 +69,14 @@ export function LandingScreen({ data, state = 'ready', onNavigate }: LandingScre
                 key={id}
                 type="button"
                 onClick={() => go(id)}
-                className="transition-colors duration-150 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terra"
+                className="transition-colors duration-150 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terra"
               >
                 {l}
               </button>
             ))}
           </nav>
           <div className="ml-auto flex items-center gap-3">
-            <Button
-              size="sm"
-              onClick={() => navigate('login')}
-              className="border border-white/20 bg-white/10 text-white hover:bg-white/20"
-            >
+            <Button size="sm" onClick={() => navigate('login')}>
               Sign in
             </Button>
             <Button size="sm" variant="primary" onClick={() => navigate('signup')}>
@@ -127,8 +87,8 @@ export function LandingScreen({ data, state = 'ready', onNavigate }: LandingScre
       </header>
 
       {state === 'error' && (
-        <div role="alert" className="border-b border-terra/30 bg-terra/20">
-          <div className="mx-auto flex max-w-[1180px] items-center gap-2 px-4 py-2.5 text-[13px] text-white md:px-8">
+        <div role="alert" className="border-b border-terra/20 bg-terra/[0.06]">
+          <div className="mx-auto flex max-w-[1180px] items-center gap-2 px-4 py-2.5 text-[13px] text-ink md:px-8">
             <TriangleAlert className="size-4 text-terra" aria-hidden />
             Live job counts are temporarily unavailable. Sign-up still works.
           </div>
@@ -136,9 +96,9 @@ export function LandingScreen({ data, state = 'ready', onNavigate }: LandingScre
       )}
 
       <main>
-        {/* HERO SECTION WITH DEVELOPER KEYBOARD VIDEO BACKGROUND & LEGIBLE OVERLAY (NO CARDS) */}
-        <section className="relative flex min-h-[90vh] items-center overflow-hidden border-b border-white/10 py-24 md:py-32">
-          {/* Background Video: Developer mechanical keyboard typing */}
+        {/* HERO SECTION: FULL-SCREEN DEVELOPER TYPING VIDEO WITH BALANCED DARK OVERLAY (NO CARDS, NO BADGE CLUTTER) */}
+        <section className="relative flex min-h-[calc(100vh-4rem)] items-center overflow-hidden border-b border-line text-white">
+          {/* Background Video */}
           <video
             autoPlay
             loop
@@ -151,23 +111,18 @@ export function LandingScreen({ data, state = 'ready', onNavigate }: LandingScre
             <source src="/videos/hero.mp4" type="video/mp4" />
           </video>
 
-          {/* Slight dark overlay with contrast gradient (video remains visible while text is 100% legible) */}
+          {/* Slight Dark Overlay so video is clearly visible while text has high contrast */}
           <div className="absolute inset-0 bg-ink/75" />
           <div className="absolute inset-0 bg-gradient-to-t from-ink via-transparent to-ink/60" />
 
-          {/* Direct Editorial Content on top of Video (NO CARDS) */}
-          <div className="relative z-10 mx-auto w-full max-w-[1180px] px-4 md:px-8">
-            <div className="max-w-[780px]">
-              <div className="inline-flex items-center gap-2 rounded-full border border-terra/40 bg-terra/20 px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-wider text-white">
-                <span className="size-2 rounded-full bg-terra animate-pulse" />
-                For students · internships & technical careers
-              </div>
-
-              <h1 className="mt-6 font-serif text-[48px] font-normal leading-[1.04] tracking-[-0.03em] text-white sm:text-[62px] md:text-[72px]">
+          {/* Clean Typography Directly on Video (NO CARDS, NO BADGES) */}
+          <div className="relative z-10 mx-auto w-full max-w-[1180px] px-4 py-20 md:px-8">
+            <div className="max-w-[800px]">
+              <h1 className="font-serif text-[46px] font-normal leading-[1.05] tracking-[-0.03em] text-white sm:text-[62px] md:text-[72px]">
                 Know why a job fits you, before you apply.
               </h1>
 
-              <p className="mt-6 max-w-[640px] text-[18px] leading-relaxed text-white/90 sm:text-[20px]">
+              <p className="mt-6 max-w-[620px] text-[18px] leading-relaxed text-white/90 sm:text-[20px]">
                 Jaggle reads your resume, scores every listing out of 100, and shows its working: which skills earned marks, which are missing, and what one change would move the needle.
               </p>
 
@@ -190,41 +145,30 @@ export function LandingScreen({ data, state = 'ready', onNavigate }: LandingScre
                 </button>
               </div>
 
-              <div className="mt-12 flex flex-wrap items-center gap-6 border-t border-white/20 pt-6 text-[13px] text-white/80">
-                <span className="flex items-center gap-2 font-mono text-[11.5px]">
-                  <span className="size-2 rounded-full bg-green" />
-                  {state === 'error'
-                    ? 'Jobs indexed today: unavailable'
-                    : `${data.stats.jobsIndexed || data.jobs.length || 128} jobs indexed today · scored in 1.8s`}
-                </span>
-                <span className="flex items-center gap-2 font-mono text-[11.5px]">
-                  <ShieldCheck className="size-4 text-terra" /> 100% Private resume data
-                </span>
-                <span className="flex items-center gap-2 font-mono text-[11.5px]">
-                  <Sparkles className="size-4 text-amber" /> Transparent 4-tier weighting
-                </span>
-              </div>
+              <p className="mt-10 font-mono text-[12px] uppercase tracking-[0.1em] text-white/70">
+                {state === 'error'
+                  ? 'Jobs indexed today: unavailable'
+                  : `${data.stats.jobsIndexed || data.jobs.length || 128} jobs indexed today · scored in about 2 seconds`}
+              </p>
             </div>
           </div>
         </section>
 
-        {/* HOW IT WORKS SECTION (STUDENT DESK & RESUME BACKDROP, SLIGHT DARK OVERLAY, NO CARDS) */}
-        <section id="how" className="relative overflow-hidden border-b border-white/10 py-28">
-          {/* Meaningful Background: Tech desk with resume notes */}
+        {/* HOW IT WORKS: FULL SCREEN SECTION WITH DEVELOPER WORKSPACE BACKGROUND (NO CARDS, NO CUTOFFS) */}
+        <section id="how" className="relative flex min-h-screen flex-col justify-center overflow-hidden border-b border-line text-white py-24">
           <div className="absolute inset-0 z-0">
             <Image
-              src="https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=1600&q=80"
-              alt="Developer workspace with notes and documents"
+              src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1920&q=80"
+              alt="Developer workspace with code and notes"
               fill
               sizes="100vw"
               className="size-full object-cover"
             />
-            {/* Slight dark overlay for crisp reading */}
             <div className="absolute inset-0 bg-ink/80" />
-            <div className="absolute inset-0 bg-gradient-to-b from-ink via-transparent to-ink" />
+            <div className="absolute inset-0 bg-gradient-to-b from-ink/90 via-transparent to-ink/90" />
           </div>
 
-          <div className="relative z-10 mx-auto max-w-[1180px] px-4 md:px-8">
+          <div className="relative z-10 mx-auto w-full max-w-[1180px] px-4 md:px-8">
             <div className="max-w-xl">
               <Micro as="p" className="text-terra">How it works</Micro>
               <h2 className="mt-2 font-serif text-[38px] leading-tight text-white md:text-[46px]">
@@ -235,8 +179,8 @@ export function LandingScreen({ data, state = 'ready', onNavigate }: LandingScre
               </p>
             </div>
 
-            {/* Direct 3-column timeline layout (NO CARDS) */}
-            <div className="mt-14 grid gap-10 md:grid-cols-3">
+            {/* Direct 3-column layout with clean top border (NO CARDS) */}
+            <div className="mt-16 grid gap-12 md:grid-cols-3">
               {[
                 {
                   step: '01',
@@ -257,9 +201,9 @@ export function LandingScreen({ data, state = 'ready', onNavigate }: LandingScre
                   desc: 'Discover the exact skill or keyword that turns multiple 50s into 70+ strong matches. Track applications on an integrated Kanban board.',
                 },
               ].map((s) => (
-                <div key={s.step} className="border-t-2 border-white/30 pt-6">
+                <div key={s.step} className="border-t-2 border-white/25 pt-6">
                   <div className="flex items-center justify-between">
-                    <span className="font-serif text-[42px] font-normal leading-none text-white/50">
+                    <span className="font-serif text-[44px] font-normal leading-none text-white/50">
                       {s.step}
                     </span>
                     <s.icon className="size-6 text-terra" />
@@ -276,23 +220,21 @@ export function LandingScreen({ data, state = 'ready', onNavigate }: LandingScre
           </div>
         </section>
 
-        {/* FEATURES SECTION (CODE WORKSPACE BACKDROP, SLIGHT DARK OVERLAY, NO CARDS) */}
-        <section id="features" className="relative overflow-hidden border-b border-white/10 py-28">
-          {/* Meaningful Background: Coding environment */}
+        {/* FEATURES: FULL SCREEN SECTION WITH CODE ENVIRONMENT BACKGROUND (NO CARDS) */}
+        <section id="features" className="relative flex min-h-screen flex-col justify-center overflow-hidden border-b border-line text-white py-24">
           <div className="absolute inset-0 z-0">
             <Image
-              src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=1600&q=80"
-              alt="Code editor on laptop workspace"
+              src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=1920&q=80"
+              alt="Programming code screen"
               fill
               sizes="100vw"
               className="size-full object-cover"
             />
-            {/* Slight dark overlay */}
             <div className="absolute inset-0 bg-ink/85" />
-            <div className="absolute inset-0 bg-gradient-to-b from-ink via-transparent to-ink" />
+            <div className="absolute inset-0 bg-gradient-to-b from-ink/90 via-transparent to-ink/90" />
           </div>
 
-          <div className="relative z-10 mx-auto max-w-[1180px] px-4 md:px-8">
+          <div className="relative z-10 mx-auto w-full max-w-[1180px] px-4 md:px-8">
             <div className="max-w-xl">
               <Micro as="p" className="text-terra">Features</Micro>
               <h2 className="mt-2 font-serif text-[38px] leading-tight text-white md:text-[46px]">
@@ -303,53 +245,42 @@ export function LandingScreen({ data, state = 'ready', onNavigate }: LandingScre
               </p>
             </div>
 
-            {/* Direct Features Grid with Clean Divider Rules (NO CARDS) */}
-            <div className="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+            {/* Direct Features Grid (NO CARDS) */}
+            <div className="mt-16 grid gap-12 sm:grid-cols-2 lg:grid-cols-3">
               {[
                 {
                   icon: Target,
                   title: 'Match scores with working',
                   desc: 'A side-by-side ledger of every job with matched skills, missing requirements, and line citations.',
-                  pill: 'Skills 70 · Role 15 · Loc 10',
                 },
                 {
                   icon: FileText,
                   title: 'Resume Studio',
                   desc: 'Comprehensive ATS diagnostics, version comparison, and tailoring advice that never fabricates experience.',
-                  pill: 'ATS 88 · Keywords Align',
                 },
                 {
                   icon: Layers,
                   title: 'Skill backlog',
                   desc: 'Identifies which missing skill unlocks the largest volume of high-scoring positions across the market.',
-                  pill: '+9 Marks · 14 Jobs Impacted',
                 },
                 {
                   icon: SquareKanban,
                   title: 'Application board',
                   desc: 'Kanban columns, timeline tracking, follow-up deadlines, and auto-generated correspondence drafts.',
-                  pill: 'Kanban & Timeline Sync',
                 },
                 {
                   icon: MessagesSquare,
                   title: 'Interview prep',
                   desc: 'Position-specific technical and behavioral questions, timed practice modes, and structured STAR note logs.',
-                  pill: 'Role-Specific Prompts',
                 },
                 {
                   icon: Sparkles,
                   title: 'Jaggle Command',
                   desc: 'Natural language queries like “remote frontend roles above 65 marks”. Every suggestion cites verifiable sources.',
-                  pill: 'AI-Powered Assistant',
                 },
               ].map((f) => (
                 <div key={f.title} className="border-t border-white/20 pt-6">
-                  <div className="flex items-center gap-2.5">
-                    <f.icon className="size-5 text-terra" />
-                    <span className="font-mono text-[11px] uppercase tracking-wider text-white/70">
-                      {f.pill}
-                    </span>
-                  </div>
+                  <f.icon className="size-6 text-terra" />
                   <h3 className="mt-3 font-serif text-[22px] font-normal text-white">
                     {f.title}
                   </h3>
@@ -362,186 +293,174 @@ export function LandingScreen({ data, state = 'ready', onNavigate }: LandingScre
           </div>
         </section>
 
-        {/* SCORING BREAKDOWN SECTION (CODE & ANALYTICS BACKDROP, SLIGHT DARK OVERLAY, NO CARDS) */}
-        <section id="scoring" className="relative overflow-hidden border-b border-white/10 py-28">
-          <div className="absolute inset-0 z-0">
-            <Image
-              src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1600&q=80"
-              alt="Code syntax and programming screen"
-              fill
-              sizes="100vw"
-              className="size-full object-cover"
-            />
-            {/* Slight dark overlay */}
-            <div className="absolute inset-0 bg-ink/85" />
-            <div className="absolute inset-0 bg-gradient-to-b from-ink via-transparent to-ink" />
-          </div>
+        {/* SCORING: FULL SCREEN SECTION IN SIGNATURE LIGHT CANVAS THEME */}
+        <section id="scoring" className="flex min-h-screen flex-col justify-center border-b border-line bg-canvas py-24">
+          <div className="mx-auto w-full max-w-[1180px] px-4 md:px-8">
+            <div className="grid gap-14 lg:grid-cols-2 lg:items-center">
+              <div>
+                <Micro as="p">Scoring</Micro>
+                <h2 className="mt-2 font-serif text-[38px] leading-tight text-ink md:text-[46px]">
+                  Every score shows its working
+                </h2>
+                <p className="mt-4 max-w-[480px] text-[17px] leading-relaxed text-muted">
+                  No opaque black box. Four immutable weights applied uniformly across every indexed role. Update your resume or career preferences, and immediately verify which marks adjust.
+                </p>
 
-          <div className="relative z-10 mx-auto grid max-w-[1180px] gap-14 px-4 md:px-8 lg:grid-cols-2 lg:items-center">
-            <div>
-              <Micro as="p" className="text-terra">Scoring</Micro>
-              <h2 className="mt-2 font-serif text-[38px] leading-tight text-white md:text-[46px]">
-                Every score shows its working
-              </h2>
-              <p className="mt-4 max-w-[480px] text-[17px] leading-relaxed text-white/90">
-                No opaque black box. Four immutable weights applied uniformly across every indexed role. Update your resume or career preferences, and immediately verify which marks adjust.
-              </p>
-
-              <div className="mt-8 border-t border-white/25 pt-6">
-                <div
-                  className="flex h-3.5 overflow-hidden rounded-full shadow-inner"
-                  role="img"
-                  aria-label="Weights: skills 70, role 15, location 10, experience 5"
-                >
-                  <span className="bg-white transition-all" style={{ width: '70%' }} />
-                  <span className="bg-terra transition-all" style={{ width: '15%' }} />
-                  <span className="bg-blue transition-all" style={{ width: '10%' }} />
-                  <span className="bg-amber transition-all" style={{ width: '5%' }} />
-                </div>
-                <dl className="mt-6 grid grid-cols-4 gap-4 text-center sm:text-left">
-                  {[
-                    ['Skills', 70, 'bg-white'],
-                    ['Role', 15, 'bg-terra'],
-                    ['Location', 10, 'bg-blue'],
-                    ['Experience', 5, 'bg-amber'],
-                  ].map(([k, v, c]) => (
-                    <div key={k as string} className="border-t border-white/20 pt-3">
-                      <dt className="flex items-center justify-center sm:justify-start gap-1.5 font-mono text-[11px] uppercase tracking-wider text-white/70">
-                        <span className={cx('size-2 rounded-full', c as string)} aria-hidden />
-                        {k}
-                      </dt>
-                      <dd className="mt-1 font-serif text-[32px] leading-none text-white">
-                        {v}
-                      </dd>
-                    </div>
-                  ))}
-                </dl>
-              </div>
-            </div>
-
-            {/* Direct Job Ledger Breakdown on Background (NO CARDS) */}
-            <div className="border-t border-white/25 pt-6 lg:border-t-0 lg:border-l lg:pl-10">
-              <div className="flex items-start justify-between gap-3 border-b border-white/20 pb-4">
-                <div>
-                  <div className="font-mono text-[11px] uppercase tracking-wider text-terra">
-                    {sampleJob.company}
+                <div className="mt-8">
+                  <div
+                    className="flex h-4 overflow-hidden rounded-full shadow-inner"
+                    role="img"
+                    aria-label="Weights: skills 70, role 15, location 10, experience 5"
+                  >
+                    <span className="bg-ink transition-all" style={{ width: '70%' }} />
+                    <span className="bg-terra transition-all" style={{ width: '15%' }} />
+                    <span className="bg-blue transition-all" style={{ width: '10%' }} />
+                    <span className="bg-amber transition-all" style={{ width: '5%' }} />
                   </div>
-                  <p className="mt-1 font-serif text-[26px] leading-snug text-white">
-                    {sampleJob.title}
+                  <dl className="mt-6 grid grid-cols-4 gap-4 text-center sm:text-left">
+                    {[
+                      ['Skills', 70, 'bg-ink'],
+                      ['Role', 15, 'bg-terra'],
+                      ['Location', 10, 'bg-blue'],
+                      ['Experience', 5, 'bg-amber'],
+                    ].map(([k, v, c]) => (
+                      <div key={k as string} className="border-t border-line pt-3">
+                        <dt className="flex items-center justify-center sm:justify-start gap-1.5 font-mono text-[11px] uppercase tracking-wider text-muted">
+                          <span className={cx('size-2 rounded-full', c as string)} aria-hidden />
+                          {k}
+                        </dt>
+                        <dd className="mt-1 font-serif text-[32px] leading-none text-ink">
+                          {v}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+              </div>
+
+              {/* Direct Job Ledger Breakdown on Canvas (NO CARDS) */}
+              <div className="border-t border-line pt-8 lg:border-t-0 lg:border-l lg:pl-12">
+                <div className="flex items-start justify-between gap-3 border-b border-line pb-4">
+                  <div>
+                    <Micro as="p" className="text-terra">{sampleJob.company}</Micro>
+                    <p className="mt-1 font-serif text-[26px] leading-snug text-ink">
+                      {sampleJob.title}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <div className="font-serif text-[42px] font-bold leading-none text-green">
+                      {sampleJob.score}
+                    </div>
+                    <div className="mt-1 font-mono text-[10px] uppercase tracking-wider text-muted">
+                      / 100 MARKS
+                    </div>
+                  </div>
+                </div>
+
+                <ul className="mt-6 space-y-4">
+                  {[
+                    ['Skills', sampleJob.marks.skills, 70],
+                    ['Role', sampleJob.marks.role, 15],
+                    ['Location', sampleJob.marks.location, 10],
+                    ['Experience', sampleJob.marks.experience, 5],
+                  ].map(([k, v, m]) => (
+                    <li key={k as string} className="grid grid-cols-[88px_1fr_48px] items-center gap-3">
+                      <span className="text-[14px] text-muted">{k}</span>
+                      <div className="h-2 w-full overflow-hidden rounded-full bg-line">
+                        <div
+                          className="h-full rounded-full bg-terra transition-all"
+                          style={{ width: `${((v as number) / (m as number)) * 100}%` }}
+                        />
+                      </div>
+                      <span className="text-right font-mono text-[12px] text-ink">
+                        {v}/{m}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="mt-6 space-y-2.5 border-t border-line pt-4 text-[13.5px]">
+                  <p className="flex items-center gap-2 text-ink">
+                    <Check className="size-4 shrink-0 text-green" aria-hidden />
+                    <span>Matched: React, TypeScript, Next.js</span>
+                  </p>
+                  <p className="flex items-center gap-2 text-ink">
+                    <Zap className="size-4 shrink-0 text-terra" aria-hidden />
+                    <span>Missing: Node.js</span>
+                    <span className="ml-auto font-mono text-[11.5px] font-medium text-green">
+                      +9 marks available
+                    </span>
                   </p>
                 </div>
-                <div className="text-right">
-                  <div className="font-serif text-[42px] font-bold leading-none text-green">
-                    {sampleJob.score}
-                  </div>
-                  <div className="mt-1 font-mono text-[10px] uppercase tracking-wider text-white/70">
-                    / 100 MARKS
-                  </div>
-                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ: FULL SCREEN SECTION IN SIGNATURE LIGHT THEME (TEXT 100% VISIBLE) */}
+        <section id="faq" className="flex min-h-screen flex-col justify-center border-b border-line bg-side py-24">
+          <div className="mx-auto w-full max-w-[1180px] px-4 md:px-8">
+            <div className="grid gap-12 lg:grid-cols-[1fr_1.6fr]">
+              <div>
+                <Micro as="p">FAQ</Micro>
+                <h2 className="mt-2 font-serif text-[38px] leading-tight text-ink md:text-[44px]">
+                  Questions, answered
+                </h2>
+                <p className="mt-3 text-[16px] text-muted">
+                  Clear answers regarding resume handling, calculation integrity, and indexing cadence.
+                </p>
               </div>
 
-              <ul className="mt-6 space-y-4">
-                {[
-                  ['Skills', sampleJob.marks.skills, 70],
-                  ['Role', sampleJob.marks.role, 15],
-                  ['Location', sampleJob.marks.location, 10],
-                  ['Experience', sampleJob.marks.experience, 5],
-                ].map(([k, v, m]) => (
-                  <li key={k as string} className="grid grid-cols-[88px_1fr_48px] items-center gap-3">
-                    <span className="text-[14px] text-white/80">{k}</span>
-                    <div className="h-2 w-full overflow-hidden rounded-full bg-white/20">
-                      <div
-                        className="h-full rounded-full bg-terra transition-all"
-                        style={{ width: `${((v as number) / (m as number)) * 100}%` }}
+              {/* High-contrast dark text on light side background */}
+              <ul className="divide-y divide-line border-y border-line">
+                {faqList.map((f, i) => (
+                  <li key={f.q}>
+                    <button
+                      type="button"
+                      aria-expanded={faq === i}
+                      aria-controls={`faq-${i}`}
+                      onClick={() => setFaq(faq === i ? null : i)}
+                      className="flex w-full items-center justify-between gap-4 py-6 text-left transition-colors duration-150 hover:text-terra focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terra"
+                    >
+                      <span className="font-serif text-[20px] text-ink">{f.q}</span>
+                      <ChevronDown
+                        className={cx('size-4 shrink-0 text-muted transition-transform duration-200', faq === i && 'rotate-180')}
+                        aria-hidden
                       />
-                    </div>
-                    <span className="text-right font-mono text-[12px] text-white/90">
-                      {v}/{m}
-                    </span>
+                    </button>
+                    {faq === i && (
+                      <p id={`faq-${i}`} className="-mt-1 pb-6 text-[15px] leading-relaxed text-muted">
+                        {f.a}
+                      </p>
+                    )}
                   </li>
                 ))}
               </ul>
-
-              <div className="mt-6 space-y-2.5 border-t border-white/20 pt-4 text-[13.5px]">
-                <p className="flex items-center gap-2 text-white/90">
-                  <Check className="size-4 shrink-0 text-green" aria-hidden />
-                  <span>Matched: React, TypeScript, Next.js</span>
-                </p>
-                <p className="flex items-center gap-2 text-white/90">
-                  <Zap className="size-4 shrink-0 text-terra" aria-hidden />
-                  <span>Missing: Node.js</span>
-                  <span className="ml-auto font-mono text-[11.5px] font-medium text-green">
-                    +9 marks available
-                  </span>
-                </p>
-              </div>
             </div>
           </div>
         </section>
 
-        {/* FAQ SECTION (NO CARDS) */}
-        <section id="faq" className="relative overflow-hidden border-b border-white/10 py-28">
-          <div className="mx-auto grid max-w-[1180px] gap-12 px-4 md:px-8 lg:grid-cols-[1fr_1.6fr]">
-            <div>
-              <Micro as="p" className="text-terra">FAQ</Micro>
-              <h2 className="mt-2 font-serif text-[38px] leading-tight text-white md:text-[44px]">
-                Questions, answered
-              </h2>
-              <p className="mt-3 text-[16px] text-white/80">
-                Clear answers regarding resume handling, calculation integrity, and indexing cadence.
-              </p>
-            </div>
-            <ul className="divide-y divide-white/20 border-y border-white/20">
-              {faqList.map((f, i) => (
-                <li key={f.q}>
-                  <button
-                    type="button"
-                    aria-expanded={faq === i}
-                    aria-controls={`faq-${i}`}
-                    onClick={() => setFaq(faq === i ? null : i)}
-                    className="flex w-full items-center justify-between gap-4 py-5 text-left transition-colors duration-150 hover:text-terra focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terra"
-                  >
-                    <span className="font-serif text-[20px] text-white">{f.q}</span>
-                    <ChevronDown
-                      className={cx('size-4 shrink-0 text-white/70 transition-transform duration-200', faq === i && 'rotate-180')}
-                      aria-hidden
-                    />
-                  </button>
-                  {faq === i && (
-                    <p id={`faq-${i}`} className="-mt-1 pb-5 text-[15px] leading-relaxed text-white/85">
-                      {f.a}
-                    </p>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-
-        {/* FINAL HEROIC CTA BANNER (SLIGHT DARK OVERLAY, NO CARDS) */}
-        <section className="relative overflow-hidden py-28">
+        {/* FINAL CTA: FULL HEIGHT ATMOSPHERIC SECTION */}
+        <section className="relative flex min-h-[75vh] items-center overflow-hidden border-b border-line text-white py-24">
           <div className="absolute inset-0 z-0">
             <Image
-              src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1600&q=80"
-              alt="Student team celebrating success"
+              src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1920&q=80"
+              alt="Student developer team"
               fill
               sizes="100vw"
               className="size-full object-cover"
             />
-            {/* Slight dark overlay with terracotta accent */}
-            <div className="absolute inset-0 bg-gradient-to-r from-ink/90 via-ink/80 to-terra/30" />
+            <div className="absolute inset-0 bg-ink/80" />
+            <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/85 to-terra/20" />
           </div>
 
-          <div className="relative z-10 mx-auto max-w-[1180px] px-4 md:px-8">
+          <div className="relative z-10 mx-auto w-full max-w-[1180px] px-4 md:px-8">
             <div className="flex flex-col items-start gap-8 md:flex-row md:items-center md:justify-between">
               <div className="max-w-[640px]">
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-terra/50 bg-terra/30 px-3.5 py-1 font-mono text-[11px] uppercase tracking-wider text-white">
-                  <Sparkles className="size-3 text-terra" /> Free for students
-                </span>
-                <h2 className="mt-4 font-serif text-[36px] font-normal leading-tight text-white md:text-[48px]">
+                <h2 className="font-serif text-[38px] font-normal leading-tight text-white md:text-[50px]">
                   Start with your resume. Leave with a reason for every application.
                 </h2>
-                <p className="mt-3 text-[17px] text-white/90">
+                <p className="mt-4 text-[17px] text-white/90">
                   Join students scoring tech jobs with zero guesswork. Set up your personalized career cockpit in two minutes.
                 </p>
               </div>
@@ -561,12 +480,12 @@ export function LandingScreen({ data, state = 'ready', onNavigate }: LandingScre
         </section>
       </main>
 
-      {/* FOOTER */}
-      <footer className="border-t border-white/15 bg-black py-14">
+      {/* FOOTER IN SIGNATURE CANVAS/SIDE THEME */}
+      <footer className="border-t border-line bg-side py-14 text-ink">
         <div className="mx-auto grid max-w-[1180px] gap-8 px-4 md:grid-cols-[1.5fr_1fr_1fr_1fr] md:px-8">
           <div>
-            <span className="font-serif text-[24px] tracking-tight text-white">Jaggle</span>
-            <p className="mt-2 max-w-[280px] text-[14px] leading-relaxed text-white/70">
+            <span className="font-serif text-[24px] tracking-tight text-ink">Jaggle</span>
+            <p className="mt-2 max-w-[280px] text-[14px] leading-relaxed text-muted">
               A calm career cockpit for students and new graduates. Built with clarity.
             </p>
           </div>
@@ -576,14 +495,14 @@ export function LandingScreen({ data, state = 'ready', onNavigate }: LandingScre
             ['Legal', ['Privacy', 'Terms', 'Data deletion']],
           ].map(([h, ls]) => (
             <div key={h as string}>
-              <Micro as="p" className="text-white/50">{h as string}</Micro>
-              <ul className="mt-3 space-y-2 text-[14px] text-white/80">
+              <Micro as="p">{h as string}</Micro>
+              <ul className="mt-3 space-y-2 text-[14px] text-muted">
                 {(ls as string[]).map((l) => (
                   <li key={l}>
                     <button
                       type="button"
                       onClick={() => navigate(l.toLowerCase().replace(/\s+/g, '-'))}
-                      className="transition-colors duration-150 hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-terra"
+                      className="transition-colors duration-150 hover:text-ink focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ink"
                     >
                       {l}
                     </button>
@@ -593,7 +512,7 @@ export function LandingScreen({ data, state = 'ready', onNavigate }: LandingScre
             </div>
           ))}
         </div>
-        <div className="mx-auto max-w-[1180px] border-t border-white/10 px-4 py-6 font-mono text-[11px] text-white/50 md:px-8">
+        <div className="mx-auto max-w-[1180px] border-t border-line px-4 py-6 font-mono text-[11px] text-faint md:px-8">
           © 2025 Jaggle · Scores are transparent guidance, not algorithmic guarantees.
         </div>
       </footer>
