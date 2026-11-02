@@ -1,13 +1,27 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, ArrowUpRight, Check, CornerDownLeft, Flame, Plus, Search, Sparkles, Upload, X } from 'lucide-react';
+import {
+  ArrowRight,
+  ArrowUpRight,
+  Check,
+  CornerDownLeft,
+  Flame,
+  Plus,
+  Search,
+  Sparkles,
+  Target,
+  Upload,
+  X,
+} from 'lucide-react';
 import type { AiAnswer, AiCard } from '@/lib/assistant';
 import { answer } from '@/lib/assistant';
 import type { UIData } from '@/lib/view-models';
 import { CAT_TONE, fmtDate, fmtPosted } from '@/lib/view-models';
 import { histogram } from '@/lib/insights';
+import { useGSAP, gsap } from '@/lib/gsap';
 import {
   Button,
   Card,
@@ -70,15 +84,32 @@ export function OverviewScreen({
   });
 
   const [scoringOpen, setScoringOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Smooth entrance stagger for dashboard elements
+  useGSAP(
+    () => {
+      if (!containerRef.current || state === 'loading') return;
+
+      gsap.from('.dash-fade-in', {
+        y: 24,
+        opacity: 0,
+        duration: 0.75,
+        stagger: 0.08,
+        ease: 'power2.out',
+      });
+    },
+    { scope: containerRef, dependencies: [state] }
+  );
 
   if (state === 'loading') return <OverviewSkeleton />;
   const empty = state === 'empty';
 
   return (
-    <div className="space-y-10">
+    <div ref={containerRef} className="space-y-10">
       <Greeting data={data} empty={empty} onNavigate={navigate} />
       {data.nextBestAction && (
-        <Card className="flex flex-col gap-4 border-terra/30 bg-terra/[0.04] p-5 sm:flex-row sm:items-center sm:justify-between">
+        <Card className="dash-fade-in flex flex-col gap-4 border-terra/30 bg-terra/[0.04] p-5 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-card sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
             <div className="micro flex items-center gap-1.5 text-terra">
               <Sparkles className="size-3.5" aria-hidden />
@@ -91,7 +122,7 @@ export function OverviewScreen({
             variant="primary"
             size="sm"
             iconRight={ArrowRight}
-            className="shrink-0 self-start sm:self-center"
+            className="shrink-0 self-start sm:self-center shadow-sm"
             onClick={() => navigate(data.nextBestAction!.target)}
           >
             {data.nextBestAction.action}
@@ -106,14 +137,20 @@ export function OverviewScreen({
         />
       ) : (
         <>
-          <KpiRow data={data} empty={empty} savedCount={savedCount} onNavigate={navigate} />
-          <CommandCard data={data} onNavigate={navigate} />
-          <div className="grid gap-10 xl:grid-cols-[2fr_1fr] xl:gap-12">
+          <div className="dash-fade-in">
+            <KpiRow data={data} empty={empty} savedCount={savedCount} onNavigate={navigate} />
+          </div>
+          <div className="dash-fade-in">
+            <CommandCard data={data} onNavigate={navigate} />
+          </div>
+          <div className="dash-fade-in grid gap-10 xl:grid-cols-[2fr_1fr] xl:gap-12">
             <Attention data={data} empty={empty} onNavigate={navigate} onToast={onToast} />
             <RightRail data={data} empty={empty} onScoring={() => setScoringOpen(true)} />
           </div>
-          <Analytics data={data} empty={empty} onNavigate={navigate} onToast={onToast} />
-          <div className="grid gap-10 xl:grid-cols-[1.55fr_1fr]">
+          <div className="dash-fade-in">
+            <Analytics data={data} empty={empty} onNavigate={navigate} onToast={onToast} />
+          </div>
+          <div className="dash-fade-in grid gap-10 xl:grid-cols-[1.55fr_1fr]">
             <TopMatches data={data} empty={empty} onNavigate={navigate} />
             <RecentApps data={data} empty={empty} onNavigate={navigate} />
           </div>
@@ -134,36 +171,59 @@ function Greeting({
   onNavigate: (s: string) => void;
 }) {
   return (
-    <header className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-      <div className="min-w-0">
-        <p className="micro flex flex-wrap items-center gap-x-2">
-          <span>{data.today?.label ?? 'Today'}</span>
-          <span aria-hidden className="text-faint">·</span>
-          {empty ? (
-            <span>Let’s set up your cockpit</span>
-          ) : (
-            <span className="flex items-center gap-1.5 text-terra">
-              <Dot tone="terra" />
-              {data.stats.strong} new strong matches
-            </span>
-          )}
-        </p>
-        <h1 className="mt-3 font-serif text-[36px] font-normal leading-[1.1] tracking-[-0.02em] md:text-[44px] md:leading-[48px]">
-          {empty ? `Welcome, ${data.user.first}.` : `Good morning, ${data.user.first}.`}
-        </h1>
-        <p className="mt-2 text-[16px] text-muted">
-          {empty ? 'Upload a resume and every job gets a score you can read.' : 'Here’s what needs your attention today.'}
-        </p>
+    <div className="dash-fade-in relative overflow-hidden rounded-3xl border border-line bg-card shadow-card">
+      {/* Background Image with Gradient Overlay */}
+      <div className="absolute inset-0 z-0">
+        <Image
+          src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1400&q=80"
+          alt="Modern tech workspace"
+          fill
+          sizes="100vw"
+          className="size-full object-cover opacity-18 filter contrast-110"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-canvas via-canvas/95 to-canvas/80" />
       </div>
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="inline-flex h-9 items-center gap-2 rounded-full border border-line bg-card px-3.5 font-mono text-[11px] text-muted">
-          <Dot tone={empty ? 'faint' : 'green'} />
-          {empty ? 'Waiting for first sync' : `Jobs synced ${data.source.synced}`}
-        </span>
-        <Button icon={Upload} onClick={() => onNavigate('resume')}>Upload resume</Button>
-        <Button variant="primary" icon={Search} onClick={() => onNavigate('jobs')}>Find jobs</Button>
+
+      <div className="relative z-10 flex flex-col gap-6 p-6 md:p-8 lg:flex-row lg:items-end lg:justify-between">
+        <div className="min-w-0 max-w-2xl">
+          <p className="micro flex flex-wrap items-center gap-x-2">
+            <span>{data.today?.label ?? 'Today'}</span>
+            <span aria-hidden className="text-faint">·</span>
+            {empty ? (
+              <span>Let’s set up your cockpit</span>
+            ) : (
+              <span className="flex items-center gap-1.5 text-terra">
+                <Dot tone="terra" />
+                {data.stats.strong} new strong matches today
+              </span>
+            )}
+            <span aria-hidden className="text-faint">·</span>
+            <span className="font-mono text-[11px] text-muted">ATS {data.stats.ats}/100</span>
+          </p>
+          <h1 className="mt-3 font-serif text-[34px] font-normal leading-[1.1] tracking-[-0.02em] md:text-[44px]">
+            {empty ? `Welcome, ${data.user.first}.` : `Good morning, ${data.user.first}.`}
+          </h1>
+          <p className="mt-2 text-[15.5px] leading-relaxed text-muted">
+            {empty
+              ? 'Upload your resume and every indexed tech job gets a transparent 100-point match breakdown.'
+              : `Here’s what needs your attention today across ${data.stats.jobsIndexed} indexed listings.`}
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2.5">
+          <span className="inline-flex h-9 items-center gap-2 rounded-full border border-line bg-white/80 px-3.5 font-mono text-[11px] text-muted backdrop-blur-sm">
+            <Dot tone={empty ? 'faint' : 'green'} />
+            {empty ? 'Waiting for first sync' : `Synced ${data.source.synced}`}
+          </span>
+          <Button icon={Upload} onClick={() => onNavigate('resume')} className="bg-white/85 shadow-sm hover:bg-white">
+            Upload resume
+          </Button>
+          <Button variant="primary" icon={Search} onClick={() => onNavigate('jobs')} className="shadow-md">
+            Find jobs
+          </Button>
+        </div>
       </div>
-    </header>
+    </div>
   );
 }
 
@@ -249,7 +309,7 @@ function KpiRow({
           type="button"
           onClick={() => onNavigate(k.target)}
           className={cx(
-            'group flex min-w-0 flex-col bg-canvas px-4 py-5 text-left transition-colors duration-150 hover:bg-soft/40 md:px-5',
+            'group flex min-w-0 flex-col bg-canvas px-4 py-5 text-left transition-all duration-300 hover:-translate-y-1 hover:bg-soft/50 hover:shadow-md md:px-5',
             i === 4 && 'col-span-2 xl:col-span-1'
           )}
         >
@@ -552,20 +612,41 @@ function Attention({
   );
 }
 
-function OsIllustration() {
+function CareerOsCard({ onScoring }: { onScoring: () => void }) {
   return (
-    <svg width="96" height="96" viewBox="0 0 96 96" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden className="shrink-0 text-ink">
-      <rect x="9" y="12" width="28" height="36" rx="3" />
-      <path d="M15 21h16M15 27h16M15 33h10" />
-      <path d="M37 38c11 0 12 17 22 17" strokeDasharray="2 3.5" />
-      <circle cx="71" cy="57" r="13" />
-      <path d="M71 44a13 13 0 0 1 12.6 16.4" stroke="var(--color-terra)" strokeWidth="2" />
-      <path d="M66 57.5l3.5 3.5 6.5-7" />
-      <path d="M79 13v9M74.5 17.5h9" stroke="var(--color-terra)" />
-      <rect x="20" y="66" width="26" height="17" rx="3" />
-      <path d="M28 66v-3.5h10V66M20 73.5h26" />
-      <path d="M58 68c-4 6-7 9-11 9" strokeDasharray="2 3.5" />
-    </svg>
+    <div className="relative overflow-hidden rounded-2xl border border-line bg-card p-5 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-card">
+      {/* Real photographic backdrop with gradient overlay */}
+      <div className="absolute inset-0 z-0">
+        <Image
+          src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=600&q=80"
+          alt="Connected systems"
+          fill
+          sizes="(max-width: 768px) 100vw, 400px"
+          className="size-full object-cover opacity-16 filter contrast-125"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-card via-card/90 to-card/60" />
+      </div>
+
+      <div className="relative z-10">
+        <div className="flex items-center gap-2">
+          <div className="grid size-7 place-items-center rounded-lg bg-terra/15 text-terra">
+            <Target className="size-4" />
+          </div>
+          <span className="font-mono text-[10.5px] uppercase tracking-wider text-muted">Transparent Formula</span>
+        </div>
+        <h3 className="mt-3 font-serif text-[19px] leading-snug">Your career OS</h3>
+        <p className="mt-1.5 text-[13.5px] leading-relaxed text-muted">
+          Every job gets the same transparent score. Improve your inputs and watch the marks follow.
+        </p>
+        <button
+          type="button"
+          onClick={onScoring}
+          className="mt-3 inline-flex items-center gap-1 text-[13px] font-medium text-terra hover:underline"
+        >
+          How scores work →
+        </button>
+      </div>
+    </div>
   );
 }
 
@@ -631,14 +712,7 @@ function RightRail({
         </ol>
       </Card>
 
-      <Card className="flex items-center gap-4 p-5">
-        <OsIllustration />
-        <div className="min-w-0">
-          <h3 className="font-serif text-[19px] leading-snug">Your career OS</h3>
-          <p className="mt-1 text-[13.5px] leading-relaxed text-muted">Every job gets the same transparent score. Improve the inputs and the scores follow.</p>
-          <button type="button" onClick={onScoring} className="mt-2 text-[13px] font-medium text-terra hover:underline">How scores work →</button>
-        </div>
-      </Card>
+      <CareerOsCard onScoring={onScoring} />
 
       <section aria-labelledby="pulse-title">
         <div className="flex items-baseline justify-between">
@@ -914,7 +988,7 @@ function TopMatches({
               {rows.map((j) => (
                 <tr
                   key={j.id}
-                  className="cursor-pointer transition-colors duration-150 hover:bg-soft/40"
+                  className="cursor-pointer transition-colors duration-200 hover:bg-soft/60"
                   onClick={() => onNavigate('jobs', { jobId: j.id })}
                 >
                   <td className="w-[96px] px-4 py-3.5 md:px-5"><MatchScore score={j.score} size="xs" /></td>
@@ -980,7 +1054,7 @@ function RecentApps({
               <button
                 type="button"
                 onClick={() => onNavigate('applications')}
-                className="flex w-full items-center gap-3 py-3.5 text-left transition-colors duration-150 hover:bg-soft/30"
+                className="flex w-full items-center gap-3 py-3.5 text-left transition-all duration-200 hover:-translate-x-0.5 hover:bg-soft/40 px-2 rounded-xl"
               >
                 <Monogram name={a.company} size={32} />
                 <span className="min-w-0 flex-1">

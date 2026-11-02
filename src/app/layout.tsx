@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { Newsreader, Geist, Geist_Mono } from 'next/font/google';
+import LenisProvider from '@/components/ui/LenisProvider';
 import './globals.css';
 
 const newsreader = Newsreader({
@@ -33,7 +34,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`${newsreader.variable} ${geist.variable} ${geistMono.variable}`}>
       <body className="flex min-h-screen flex-col bg-canvas font-sans text-ink">
-        {children}
+        <LenisProvider>{children}</LenisProvider>
       </body>
     </html>
   );
