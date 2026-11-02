@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import {
   ArrowRight,
@@ -96,24 +95,23 @@ export function LandingScreen({ data, state = 'ready', onNavigate }: LandingScre
       )}
 
       <main>
-        {/* HERO SECTION: FULL-SCREEN DEVELOPER TYPING VIDEO WITH BALANCED DARK OVERLAY (NO CARDS, NO BADGE CLUTTER) */}
+        {/* HERO SECTION: REVERTED TO THE GLOBE / PLANET VIDEO WITH SUBTLE DARK OVERLAY */}
         <section className="relative flex min-h-[calc(100vh-4rem)] items-center overflow-hidden border-b border-line text-white">
-          {/* Background Video */}
+          {/* Globe / Planet Background Video */}
           <video
             autoPlay
             loop
             muted
             playsInline
-            poster="https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=1600&q=80"
+            poster="/videos/hero-poster.jpg"
             className="absolute inset-0 size-full object-cover object-center"
           >
-            <source src="/videos/hero.webm" type="video/webm" />
             <source src="/videos/hero.mp4" type="video/mp4" />
           </video>
 
-          {/* Slight Dark Overlay so video is clearly visible while text has high contrast */}
-          <div className="absolute inset-0 bg-ink/75" />
-          <div className="absolute inset-0 bg-gradient-to-t from-ink via-transparent to-ink/60" />
+          {/* Calibrated Dark Overlay so the globe animation shines through while text is 100% crisp */}
+          <div className="absolute inset-0 bg-ink/65" />
+          <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-transparent to-ink/50" />
 
           {/* Clean Typography Directly on Video (NO CARDS, NO BADGES) */}
           <div className="relative z-10 mx-auto w-full max-w-[1180px] px-4 py-20 md:px-8">
@@ -154,32 +152,20 @@ export function LandingScreen({ data, state = 'ready', onNavigate }: LandingScre
           </div>
         </section>
 
-        {/* HOW IT WORKS: FULL SCREEN SECTION WITH DEVELOPER WORKSPACE BACKGROUND (NO CARDS, NO CUTOFFS) */}
-        <section id="how" className="relative flex min-h-screen flex-col justify-center overflow-hidden border-b border-line text-white py-24">
-          <div className="absolute inset-0 z-0">
-            <Image
-              src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1920&q=80"
-              alt="Developer workspace with code and notes"
-              fill
-              sizes="100vw"
-              className="size-full object-cover"
-            />
-            <div className="absolute inset-0 bg-ink/80" />
-            <div className="absolute inset-0 bg-gradient-to-b from-ink/90 via-transparent to-ink/90" />
-          </div>
-
-          <div className="relative z-10 mx-auto w-full max-w-[1180px] px-4 md:px-8">
+        {/* HOW IT WORKS: CLEAN WHITE / CANVAS THEME (NO BACKGROUND IMAGE, NO CARDS) */}
+        <section id="how" className="flex min-h-screen flex-col justify-center border-b border-line bg-canvas py-24 text-ink">
+          <div className="mx-auto w-full max-w-[1180px] px-4 md:px-8">
             <div className="max-w-xl">
-              <Micro as="p" className="text-terra">How it works</Micro>
-              <h2 className="mt-2 font-serif text-[38px] leading-tight text-white md:text-[46px]">
+              <Micro as="p">How it works</Micro>
+              <h2 className="mt-2 font-serif text-[38px] leading-tight text-ink md:text-[46px]">
                 Three steps, no guesswork
               </h2>
-              <p className="mt-3 text-[17px] text-white/85">
+              <p className="mt-3 text-[17px] text-muted">
                 From your initial resume PDF to calibrated job applications with zero wasted effort.
               </p>
             </div>
 
-            {/* Direct 3-column layout with clean top border (NO CARDS) */}
+            {/* Direct 3-Column Timeline with Top Border Dividers (NO CARDS) */}
             <div className="mt-16 grid gap-12 md:grid-cols-3">
               {[
                 {
@@ -201,17 +187,17 @@ export function LandingScreen({ data, state = 'ready', onNavigate }: LandingScre
                   desc: 'Discover the exact skill or keyword that turns multiple 50s into 70+ strong matches. Track applications on an integrated Kanban board.',
                 },
               ].map((s) => (
-                <div key={s.step} className="border-t-2 border-white/25 pt-6">
+                <div key={s.step} className="border-t-2 border-line pt-6">
                   <div className="flex items-center justify-between">
-                    <span className="font-serif text-[44px] font-normal leading-none text-white/50">
+                    <span className="font-serif text-[44px] font-normal leading-none text-faint">
                       {s.step}
                     </span>
                     <s.icon className="size-6 text-terra" />
                   </div>
-                  <h3 className="mt-4 font-serif text-[24px] font-normal text-white">
+                  <h3 className="mt-4 font-serif text-[24px] font-normal text-ink">
                     {s.title}
                   </h3>
-                  <p className="mt-2.5 text-[15px] leading-relaxed text-white/85">
+                  <p className="mt-2.5 text-[15px] leading-relaxed text-muted">
                     {s.desc}
                   </p>
                 </div>
@@ -220,32 +206,20 @@ export function LandingScreen({ data, state = 'ready', onNavigate }: LandingScre
           </div>
         </section>
 
-        {/* FEATURES: FULL SCREEN SECTION WITH CODE ENVIRONMENT BACKGROUND (NO CARDS) */}
-        <section id="features" className="relative flex min-h-screen flex-col justify-center overflow-hidden border-b border-line text-white py-24">
-          <div className="absolute inset-0 z-0">
-            <Image
-              src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=1920&q=80"
-              alt="Programming code screen"
-              fill
-              sizes="100vw"
-              className="size-full object-cover"
-            />
-            <div className="absolute inset-0 bg-ink/85" />
-            <div className="absolute inset-0 bg-gradient-to-b from-ink/90 via-transparent to-ink/90" />
-          </div>
-
-          <div className="relative z-10 mx-auto w-full max-w-[1180px] px-4 md:px-8">
+        {/* FEATURES: CLEAN LIGHT THEME (NO CARDS) */}
+        <section id="features" className="flex min-h-screen flex-col justify-center border-b border-line bg-side py-24 text-ink">
+          <div className="mx-auto w-full max-w-[1180px] px-4 md:px-8">
             <div className="max-w-xl">
-              <Micro as="p" className="text-terra">Features</Micro>
-              <h2 className="mt-2 font-serif text-[38px] leading-tight text-white md:text-[46px]">
+              <Micro as="p">Features</Micro>
+              <h2 className="mt-2 font-serif text-[38px] leading-tight text-ink md:text-[46px]">
                 A cockpit for the whole search
               </h2>
-              <p className="mt-3 text-[17px] text-white/85">
+              <p className="mt-3 text-[17px] text-muted">
                 Engineered specifically for university students navigating technical internships and early roles.
               </p>
             </div>
 
-            {/* Direct Features Grid (NO CARDS) */}
+            {/* Direct Features Grid with Top Dividers (NO CARDS) */}
             <div className="mt-16 grid gap-12 sm:grid-cols-2 lg:grid-cols-3">
               {[
                 {
@@ -279,12 +253,12 @@ export function LandingScreen({ data, state = 'ready', onNavigate }: LandingScre
                   desc: 'Natural language queries like “remote frontend roles above 65 marks”. Every suggestion cites verifiable sources.',
                 },
               ].map((f) => (
-                <div key={f.title} className="border-t border-white/20 pt-6">
+                <div key={f.title} className="border-t border-line pt-6">
                   <f.icon className="size-6 text-terra" />
-                  <h3 className="mt-3 font-serif text-[22px] font-normal text-white">
+                  <h3 className="mt-3 font-serif text-[22px] font-normal text-ink">
                     {f.title}
                   </h3>
-                  <p className="mt-2 text-[14.5px] leading-relaxed text-white/85">
+                  <p className="mt-2 text-[14.5px] leading-relaxed text-muted">
                     {f.desc}
                   </p>
                 </div>
@@ -293,8 +267,8 @@ export function LandingScreen({ data, state = 'ready', onNavigate }: LandingScre
           </div>
         </section>
 
-        {/* SCORING: FULL SCREEN SECTION IN SIGNATURE LIGHT CANVAS THEME */}
-        <section id="scoring" className="flex min-h-screen flex-col justify-center border-b border-line bg-canvas py-24">
+        {/* SCORING: CLEAN LIGHT CANVAS THEME (NO CARDS) */}
+        <section id="scoring" className="flex min-h-screen flex-col justify-center border-b border-line bg-canvas py-24 text-ink">
           <div className="mx-auto w-full max-w-[1180px] px-4 md:px-8">
             <div className="grid gap-14 lg:grid-cols-2 lg:items-center">
               <div>
@@ -397,8 +371,8 @@ export function LandingScreen({ data, state = 'ready', onNavigate }: LandingScre
           </div>
         </section>
 
-        {/* FAQ: FULL SCREEN SECTION IN SIGNATURE LIGHT THEME (TEXT 100% VISIBLE) */}
-        <section id="faq" className="flex min-h-screen flex-col justify-center border-b border-line bg-side py-24">
+        {/* FAQ: CLEAN LIGHT THEME (TEXT 100% VISIBLE) */}
+        <section id="faq" className="flex min-h-screen flex-col justify-center border-b border-line bg-side py-24 text-ink">
           <div className="mx-auto w-full max-w-[1180px] px-4 md:px-8">
             <div className="grid gap-12 lg:grid-cols-[1fr_1.6fr]">
               <div>
@@ -440,27 +414,15 @@ export function LandingScreen({ data, state = 'ready', onNavigate }: LandingScre
           </div>
         </section>
 
-        {/* FINAL CTA: FULL HEIGHT ATMOSPHERIC SECTION */}
-        <section className="relative flex min-h-[75vh] items-center overflow-hidden border-b border-line text-white py-24">
-          <div className="absolute inset-0 z-0">
-            <Image
-              src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1920&q=80"
-              alt="Student developer team"
-              fill
-              sizes="100vw"
-              className="size-full object-cover"
-            />
-            <div className="absolute inset-0 bg-ink/80" />
-            <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/85 to-terra/20" />
-          </div>
-
-          <div className="relative z-10 mx-auto w-full max-w-[1180px] px-4 md:px-8">
+        {/* FINAL CTA: CLEAN LIGHT THEME */}
+        <section className="flex min-h-[60vh] flex-col justify-center border-b border-line bg-canvas py-24 text-ink">
+          <div className="mx-auto w-full max-w-[1180px] px-4 md:px-8">
             <div className="flex flex-col items-start gap-8 md:flex-row md:items-center md:justify-between">
               <div className="max-w-[640px]">
-                <h2 className="font-serif text-[38px] font-normal leading-tight text-white md:text-[50px]">
+                <h2 className="font-serif text-[38px] font-normal leading-tight text-ink md:text-[48px]">
                   Start with your resume. Leave with a reason for every application.
                 </h2>
-                <p className="mt-4 text-[17px] text-white/90">
+                <p className="mt-4 text-[17px] text-muted">
                   Join students scoring tech jobs with zero guesswork. Set up your personalized career cockpit in two minutes.
                 </p>
               </div>
@@ -470,7 +432,7 @@ export function LandingScreen({ data, state = 'ready', onNavigate }: LandingScre
                   variant="primary"
                   iconRight={ArrowRight}
                   onClick={() => navigate('signup')}
-                  className="shadow-2xl hover:shadow-terra/40"
+                  className="shadow-xl"
                 >
                   Create your account
                 </Button>
