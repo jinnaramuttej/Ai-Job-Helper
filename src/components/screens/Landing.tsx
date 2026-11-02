@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import {
   ArrowRight,
@@ -206,9 +207,20 @@ export function LandingScreen({ data, state = 'ready', onNavigate }: LandingScre
           </div>
         </section>
 
-        {/* FEATURES: CLEAN LIGHT THEME (NO CARDS) */}
-        <section id="features" className="flex min-h-screen flex-col justify-center border-b border-line bg-side py-24 text-ink">
-          <div className="mx-auto w-full max-w-[1180px] px-4 md:px-8">
+        {/* FEATURES: LIGHT THEME WITH CODE WORKSPACE BACKGROUND (NO CARDS) */}
+        <section id="features" className="relative flex min-h-screen flex-col justify-center overflow-hidden border-b border-line bg-side py-24 text-ink">
+          <div className="absolute inset-0 z-0">
+            <Image
+              src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=1920&q=80"
+              alt="Programming code workspace"
+              fill
+              sizes="100vw"
+              className="size-full object-cover opacity-12"
+            />
+            <div className="absolute inset-0 bg-side/90" />
+          </div>
+
+          <div className="relative z-10 mx-auto w-full max-w-[1180px] px-4 md:px-8">
             <div className="max-w-xl">
               <Micro as="p">Features</Micro>
               <h2 className="mt-2 font-serif text-[38px] leading-tight text-ink md:text-[46px]">
@@ -414,15 +426,27 @@ export function LandingScreen({ data, state = 'ready', onNavigate }: LandingScre
           </div>
         </section>
 
-        {/* FINAL CTA: CLEAN LIGHT THEME */}
-        <section className="flex min-h-[60vh] flex-col justify-center border-b border-line bg-canvas py-24 text-ink">
-          <div className="mx-auto w-full max-w-[1180px] px-4 md:px-8">
+        {/* FINAL CTA: FULL HEIGHT ATMOSPHERIC SECTION */}
+        <section className="relative flex min-h-[70vh] items-center overflow-hidden border-b border-line py-24 text-white">
+          <div className="absolute inset-0 z-0">
+            <Image
+              src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1920&q=80"
+              alt="Student developer team celebrating"
+              fill
+              sizes="100vw"
+              className="size-full object-cover"
+            />
+            <div className="absolute inset-0 bg-ink/75" />
+            <div className="absolute inset-0 bg-gradient-to-r from-ink/90 via-ink/80 to-terra/25" />
+          </div>
+
+          <div className="relative z-10 mx-auto w-full max-w-[1180px] px-4 md:px-8">
             <div className="flex flex-col items-start gap-8 md:flex-row md:items-center md:justify-between">
               <div className="max-w-[640px]">
-                <h2 className="font-serif text-[38px] font-normal leading-tight text-ink md:text-[48px]">
+                <h2 className="font-serif text-[38px] font-normal leading-tight text-white md:text-[50px]">
                   Start with your resume. Leave with a reason for every application.
                 </h2>
-                <p className="mt-4 text-[17px] text-muted">
+                <p className="mt-4 text-[17px] text-white/90">
                   Join students scoring tech jobs with zero guesswork. Set up your personalized career cockpit in two minutes.
                 </p>
               </div>
@@ -432,7 +456,7 @@ export function LandingScreen({ data, state = 'ready', onNavigate }: LandingScre
                   variant="primary"
                   iconRight={ArrowRight}
                   onClick={() => navigate('signup')}
-                  className="shadow-xl"
+                  className="shadow-2xl hover:shadow-terra/40"
                 >
                   Create your account
                 </Button>
